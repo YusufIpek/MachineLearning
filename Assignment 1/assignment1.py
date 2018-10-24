@@ -1,5 +1,6 @@
 import numpy as np
 import random as rand
+import math
 
 N = 10
 c = 6
@@ -54,27 +55,67 @@ def generate_general_A_matrix(m_order, x_values):
     for i in range(0, coefficient):
         tmp = []
         for j in range(0, coefficient):
-            if i == 0 and j == 0:
-                tmp.append(len(x_values))
-            else:
-                tmp.append(sigma(i+j, x_values))
+            tmp.append(sigma(i+j, x_values))
         A.append(tmp)
     return A
 
 #TODO  make the predicate function
-    
-def generate_general_b_matrix(predicted_func, x_values):
-    b = []
-    for it in range(0,len(x_values)):
-        res = 0
-        for value in x_values:
-            res += predicted_func(value) * value**it
-        b.append(res)
+   
+def predict_t_value(phi,weightsVec):
+    return np.matmul(np.transpose(phi), weightsVec)
+
+def compute_b_matrix(matrixA, weightsVec):
+    return np.matmul(matrixA, weightsVec)
+
+
+
+def error_func(predictate_values, actual_values):
+    sum_error = 0.0
+    for i in range(len(actual_values)):
+        predicted_error = predictate_values[i] - actual_values[i]
+        sum_error += predicted_error**2
+    mean_error = sum_error / float(len(actual_values))
+    return math.sqrt(mean_error)
+
+def computed_phi(x_values, order):
+    result = []
+    for i in range(0,order+1):
+        sum_val = 0
+        for x in x_values:
+            sum_val += x**i
+        result.append(sum_val)
+    return result
+
+
+def generate_weights_vector(polynom_order):
+    weights_vec = []
+    for i in range(0,polynom_order+1):
+        weights_vec.append(rand.random())
+    return weights_vec
+
+
+def compute_new_weights(phi, predicted_values):
+    tmp = np.linalg.inv(np.matmul(np.transpose(phi),phi))
+    tmp = np.matmul(tmp,np.transpose(phi))
+    return np.matmul(tmp, predicted_values)
+        
 
 data_set = generate_data_set()
-
+polynom_order = 1
 print(data_set)
-res = generate_general_A_matrix(1, data_set)
-for row in res:
-    print(row)
+matrixA = np.array(generate_general_A_matrix(polynom_order, data_set) )
+print("A matrix:")
+print(matrixA)
+  
+weightVec = generate_weights_vector(polynom_order)    
+print("Initial weights:")
+print(weightVec)
+
+bVec = compute_b_matrix(matrixA, weightVec)
+print("B Vector:")
+print(bVec)
+
+matrixT = predict_t_value()
+
+
         
