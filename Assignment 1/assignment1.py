@@ -97,11 +97,11 @@ def generate_weights_vector(polynom_order):
 def compute_new_weights(phi, predicted_values):
     tmp = np.linalg.inv(np.matmul(np.transpose(phi),phi))
     tmp = np.matmul(tmp,np.transpose(phi))
-    return np.matmul(tmp, predicted_values)
+    return tmp * predicted_values
         
 
 data_set = generate_data_set()
-polynom_order = 1
+polynom_order = 2
 print(data_set)
 matrixA = np.array(generate_general_A_matrix(polynom_order, data_set) )
 print("A matrix:")
@@ -115,7 +115,20 @@ bVec = compute_b_matrix(matrixA, weightVec)
 print("B Vector:")
 print(bVec)
 
-matrixT = predict_t_value()
+phi = computed_phi(data_set, polynom_order)
+print("Phi:")
+print(phi)
 
+scalarT = predict_t_value(phi, weightVec)
+print("T Scalar")
+print(scalarT)
+
+print("B tmppp")
+print((np.transpose(phi))*scalarT)
+
+
+newWeightVec = compute_new_weights(phi, scalarT)
+print("New Weight")
+print(newWeightVec)
 
         
