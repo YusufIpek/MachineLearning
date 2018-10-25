@@ -58,16 +58,12 @@ def generate_general_A_matrix(m_order, x_values):
             tmp.append(sigma(i+j, x_values))
         A.append(tmp)
     return A
-
-#TODO  make the predicate function
    
 def predict_t_value(phi,weightsVec):
-    return np.matmul(np.transpose(phi), weightsVec)
+    return np.matmul(phi, weightsVec)
 
 def compute_b_matrix(matrixA, weightsVec):
     return np.matmul(matrixA, weightsVec)
-
-
 
 def error_func(predictate_values, actual_values):
     sum_error = 0.0
@@ -78,13 +74,16 @@ def error_func(predictate_values, actual_values):
     return math.sqrt(mean_error)
 
 def computed_phi(x_values, order):
-    result = []
-    for i in range(0,order+1):
-        sum_val = 0
-        for x in x_values:
-            sum_val += x**i
-        result.append(sum_val)
-    return result
+    # for each x value in vector of x_values we loop and make phi vector for each x
+    
+    big_phi_Mat = []
+    
+    for x in x_values:
+        small_phi_Vec = []
+        for i in range(0,order+1):
+            small_phi_Vec.append(x**i)
+        big_phi_Mat.append(small_phi_Vec)
+    return big_phi_Mat
 
 
 def generate_weights_vector(polynom_order):
@@ -97,7 +96,7 @@ def generate_weights_vector(polynom_order):
 def compute_new_weights(phi, predicted_values):
     tmp = np.linalg.inv(np.matmul(np.transpose(phi),phi))
     tmp = np.matmul(tmp,np.transpose(phi))
-    return tmp * predicted_values
+    return np.matmul( tmp,predicted_values )
         
 
 data_set = generate_data_set()
@@ -115,19 +114,20 @@ bVec = compute_b_matrix(matrixA, weightVec)
 print("B Vector:")
 print(bVec)
 
-phi = computed_phi(data_set, polynom_order)
+phi = np.array(computed_phi(data_set, polynom_order) )
 print("Phi:")
 print(phi)
 
-scalarT = predict_t_value(phi, weightVec)
-print("T Scalar")
-print(scalarT)
+Vec_T = predict_t_value(phi, weightVec)
+print("T Vector")
+print(Vec_T)
 
+B_temp = np.matmul((np.transpose(phi)),Vec_T)
 print("B tmppp")
-print((np.transpose(phi))*scalarT)
+print(B_temp)
 
 
-newWeightVec = compute_new_weights(phi, scalarT)
+newWeightVec = compute_new_weights(phi, Vec_T)
 print("New Weight")
 print(newWeightVec)
 
