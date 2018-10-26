@@ -148,14 +148,17 @@ Vec_T = predict_t_value(phi, weightVec)
 #print("T Vector")
 #print(Vec_T)
 
-B_temp = np.matmul((np.transpose(phi)),Vec_T)
-#print("B tmppp")
-#print(B_temp)
-
-
 newWeightVec = compute_new_weights(phi, Vec_T,Lambda)
 print("New Weight")
 print(newWeightVec)
+
+new_Vec_T = predict_t_value(phi, newWeightVec)
+#print("T Vector")
+#print(Vec_T)
+
+B_temp = np.matmul((np.transpose(phi)),new_Vec_T)
+#print("B tmppp")
+#print(B_temp)
 
 new_Y = np.matmul( phi,newWeightVec )
 print("New Y values")
