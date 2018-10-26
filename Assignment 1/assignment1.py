@@ -5,7 +5,7 @@ from matplotlib import pyplot
 
 N = 1000
 c = 6
-Lambda = 18   # for regularization 
+Lambda = 0   # for regularization 
 polynom_order = 9
 
 def quadratic_func(x, epsilon):
@@ -119,6 +119,15 @@ def plot_points(data_x,data_y,clr = 'blue'):
     #pyplot.scatter(data_x,data_y)
     pyplot.scatter(data_x,data_y,color=clr)
     pyplot.show()
+
+
+def root_mean_square_error(predicted_values, y_values):
+    sum_error = 0
+    for i in range(0,len(predicted_values)):
+        sum_error += (predicted_values[i]-y_values[i])**2
+    erms = math.sqrt((2*sum_error)/len(predicted_values))
+    return erms
+    
         
 
 x_values,y_values = generate_data_set()
@@ -161,4 +170,9 @@ new_Y = np.matmul( phi,newWeightVec )
 print("New Y values")
 #print(new_Y) 
 plot_points(x_values,new_Y,'red')
-#plot_points(x_values,y_values)       
+#plot_points(x_values,y_values) 
+
+
+erms = root_mean_square_error(new_Vec_T, y_values)      
+print("Root-Mean-Square-Error")
+print(erms)
