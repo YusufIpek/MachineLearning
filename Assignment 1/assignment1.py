@@ -11,6 +11,10 @@ polynom_order = 3
 def quadratic_func(x):
     return x**2 + x + c
 
+def create_epsilon_vector(variance,mean):
+    epsilon_vec = np.random.normal(mean,variance,N)
+    print(epsilon_vec)
+    return epsilon_vec
 
 def compute_epsilon(x_values):
     if len(x_values) == 0:
@@ -26,8 +30,6 @@ def compute_epsilon(x_values):
         normalized_sum += (x-mean)**2
     
     return (normalized_sum/len(x_values)),mean
-    
-        
     
 
 def generate_data_set():
@@ -108,12 +110,14 @@ def plot_points(data_x,data_y,clr = 'blue'):
     pyplot.scatter(data_x,data_y)
     pyplot.scatter(data_x,data_y,color=clr)
     pyplot.show()
-            
+        
 
 x_values,y_values = generate_data_set()
+variance, mean = compute_epsilon(x_values)    
+epsilon_vec = create_epsilon_vector(variance, mean)
 #print(data_set)
 matrixA = np.array(generate_general_A_matrix(polynom_order, x_values) )
-print("A matrix:")
+#print("A matrix:")
 #print(matrixA)
   
 weightVec = generate_initial_weights_vector(polynom_order)    
@@ -121,19 +125,19 @@ print("Initial weights:")
 print(weightVec)
 
 bVec = compute_b_matrix(matrixA, weightVec)
-print("B Vector:")
+#print("B Vector:")
 #print(bVec)
 
 phi = np.array(computed_phi(x_values, polynom_order) )
-print("Phi:")#design Matrix
+#print("Phi:")#design Matrix
 #print(phi)
 
 Vec_T = predict_t_value(phi, weightVec)
-print("T Vector")
+#print("T Vector")
 #print(Vec_T)
 
 B_temp = np.matmul((np.transpose(phi)),Vec_T)
-print("B tmppp")
+#print("B tmppp")
 #print(B_temp)
 
 
