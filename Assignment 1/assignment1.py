@@ -15,13 +15,21 @@ def create_epsilon_vector():
     mean = 0
     sigma = 0.1
     samples = N*N
-    epsilon_vec = np.random.normal(mean,sigma,samples)
+    return np.random.normal(mean,sigma,samples)
+
+def create_epsilon_vector2(variance,mean):
+    mean = 0
+    variance = 0.1
+    epsilon_vec = np.random.normal(mean,variance,N)
+    count, bins, ignored = pyplot.hist(epsilon_vec, 30, density=True)
+    pyplot.plot(bins, 1/(variance * np.sqrt(2 * np.pi)) *np.exp( - (bins - mean)**2 / (2 * variance**2) ),linewidth=2, color='r')
+    pyplot.show()
+    #print(epsilon_vec)
     return epsilon_vec
 
 def compute_epsilon(x_values):
     if len(x_values) == 0:
         return -1
-    
     sum_of_x = 0
     for x in x_values:
        sum_of_x += x
