@@ -3,8 +3,10 @@ import random as rand
 import math
 from matplotlib import pyplot
 
-N = 10
+N = 100
 c = 6
+Lambda = 3   # for regularization 
+polynom_order = 3
 
 def quadratic_func(x):
     return x**2 + x + c
@@ -94,22 +96,26 @@ def generate_initial_weights_vector(polynom_order):
     return weights_vec
 
 
-def compute_new_weights(phi, predicted_values):
-    tmp = np.linalg.inv(np.matmul(np.transpose(phi),phi))
+def compute_new_weights(phi, predicted_values,Lambda):
+    before_lambda = np.matmul(np.transpose(phi),phi)
+    shape_tuple = before_lambda.shape
+    regularization_matrix = Lambda*(np.identity(shape_tuple[0]))
+    tmp = np.linalg.inv(before_lambda + regularization_matrix)
     tmp = np.matmul(tmp,np.transpose(phi))
     return np.matmul( tmp,predicted_values )
 
 def plot_points(data_x,data_y,clr = 'blue'): 
+    
     pyplot.scatter(data_x,data_y)
     pyplot.scatter(data_x,data_y,color=clr)
-    pyplot.show()        
+    pyplot.show()
+            
 
 x_values,y_values = generate_data_set()
-polynom_order = 3
 #print(data_set)
 matrixA = np.array(generate_general_A_matrix(polynom_order, x_values) )
 print("A matrix:")
-print(matrixA)
+#print(matrixA)
   
 weightVec = generate_initial_weights_vector(polynom_order)    
 print("Initial weights:")
@@ -117,27 +123,27 @@ print(weightVec)
 
 bVec = compute_b_matrix(matrixA, weightVec)
 print("B Vector:")
-print(bVec)
+#print(bVec)
 
 phi = np.array(computed_phi(x_values, polynom_order) )
 print("Phi:")#design Matrix
-print(phi)
+#print(phi)
 
 Vec_T = predict_t_value(phi, weightVec)
 print("T Vector")
-print(Vec_T)
+#print(Vec_T)
 
 B_temp = np.matmul((np.transpose(phi)),Vec_T)
 print("B tmppp")
-print(B_temp)
+#print(B_temp)
 
 
-newWeightVec = compute_new_weights(phi, Vec_T)
+newWeightVec = compute_new_weights(phi, Vec_T,Lambda)
 print("New Weight")
 print(newWeightVec)
 
 new_Y = np.matmul( phi,newWeightVec )
 print("New Y values")
-print(new_Y) 
+#print(new_Y) 
 plot_points(x_values,new_Y,'red')
 #plot_points(x_values,y_values)       
