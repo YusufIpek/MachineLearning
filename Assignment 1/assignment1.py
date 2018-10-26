@@ -3,9 +3,9 @@ import random as rand
 import math
 from matplotlib import pyplot
 
-N = 10000
+N = 100
 c = 6
-Lambda = 0   # for regularization 
+Lambda = 18   # for regularization 
 polynom_order = 9
 
 
@@ -182,11 +182,10 @@ new_Y = np.matmul( phi,newWeightVec )
 #print(new_Y) 
 plot_points(x_values,y_values)       
 plot_points(x_values,new_Y,'red')
-<<<<<<< HEAD
 #plot_points(x_values,y_values) 
 
 
-erms = root_mean_square_error(new_Vec_T, y_values)      
+erms = root_mean_square_error(new_Y, y_values)      
 print("Root-Mean-Square-Error")
 print(erms)
 
