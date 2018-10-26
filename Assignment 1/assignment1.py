@@ -99,8 +99,9 @@ def compute_new_weights(phi, predicted_values):
     tmp = np.matmul(tmp,np.transpose(phi))
     return np.matmul( tmp,predicted_values )
 
-def plot_points(data_x,data_y):   
+def plot_points(data_x,data_y,clr = 'blue'): 
     pyplot.scatter(data_x,data_y)
+    pyplot.scatter(data_x,data_y,color=clr)
     pyplot.show()        
 
 x_values,y_values = generate_data_set()
@@ -135,4 +136,8 @@ newWeightVec = compute_new_weights(phi, Vec_T)
 print("New Weight")
 print(newWeightVec)
 
-        
+new_Y = np.matmul( phi,newWeightVec )
+print("New Y values")
+print(new_Y) 
+plot_points(x_values,new_Y,'red')
+#plot_points(x_values,y_values)       
