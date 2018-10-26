@@ -6,14 +6,12 @@ from matplotlib import pyplot
 N = 20
 c = 6
 Lambda = 0   # for regularization 
-polynom_order = 5
+polynom_order = 4
 
 def quadratic_func(x, epsilon):
     return x**2 + x + c + epsilon
 
 def create_epsilon_vector(variance,mean):
-    mean = 0
-    variance = 0.1
     epsilon_vec = np.random.normal(mean,variance,N*N)
     count, bins, ignored = pyplot.hist(epsilon_vec, 30, density=True)
     pyplot.plot(bins, 1/(variance * np.sqrt(2 * np.pi)) *np.exp( - (bins - mean)**2 / (2 * variance**2) ),linewidth=2, color='r')
@@ -37,7 +35,7 @@ def compute_epsilon(x_values):
 
 def generate_data_set():
     x_values = []
-    epsilon_vec = create_epsilon_vector()
+    epsilon_vec = create_epsilon_vector(0,0.1)
     for i in range(0, N):
         x_values.append(i)
     #epsilon,_ = compute_epsilon(x_values)
@@ -56,16 +54,6 @@ def sigma(order, x_values):
     for value in x_values:
         result += value**order
     return result
-
-def generate_general_A_matrix(m_order, x_values):
-    coefficient = m_order+1
-    A = []
-    for i in range(0, coefficient):
-        tmp = []
-        for j in range(0, coefficient):
-            tmp.append(sigma(i+j, x_values))
-        A.append(tmp)
-    return A
    
 def predict_t_value(phi,weightsVec):
     return np.matmul(phi, weightsVec)
@@ -93,13 +81,34 @@ def computed_phi(x_values, order):
         big_phi_Mat.append(small_phi_Vec)
     return big_phi_Mat
 
+def generate_general_A_matrix(m_order, x_values):
+    coefficient = m_order+1
+    A = []
+    for i in range(0, coefficient):
+        tmp = []
+        for j in range(0, coefficient):
+            tmp.append(sigma(i+j, x_values))
+        A.append(tmp)
+    return A
 
-def generate_initial_weights_vector(polynom_order):
-    weights_vec = []
+def generate_initial_weights_vector(polynom_order,A,b):
+    #weights_vec = []
+    #for i in range(0,polynom_order+1):
+     #   weights_vec.append(rand.random())
+    #return weights_vec
+    return np.matmul(A,b)
+    
+def generate_b_vec(x_values,y_values,polynom_order):
+    B = []
+    sum_y = 0
+    for y in y_values:
+        sum_y += y
+    sum_x = 0
+    for x in x_values:
+        sum_x += x
     for i in range(0,polynom_order+1):
-        weights_vec.append(rand.random())
-    return weights_vec
-
+        B.append(sum_y*(sum_x**i))
+    return np.array(B)
 
 def compute_new_weights(phi, predicted_values,Lambda):
     before_lambda = np.matmul(np.transpose(phi),phi)
@@ -110,20 +119,20 @@ def compute_new_weights(phi, predicted_values,Lambda):
     return np.matmul( tmp,predicted_values )
 
 def plot_points(data_x,data_y,clr = 'blue'): 
-    pyplot.scatter(data_x,data_y)
+    #pyplot.scatter(data_x,data_y)
     pyplot.scatter(data_x,data_y,color=clr)
     pyplot.show()
         
 
 x_values,y_values = generate_data_set()
 variance, mean = compute_epsilon(x_values)    
-#epsilon_vec = create_epsilon_vector(variance, mean)
+epsilon_vec = create_epsilon_vector(variance, mean)
 #print(data_set)
 matrixA = np.array(generate_general_A_matrix(polynom_order, x_values) )
 #print("A matrix:")
 #print(matrixA)
-  
-weightVec = generate_initial_weights_vector(polynom_order)    
+vec_B = generate_b_vec(x_values,y_values,polynom_order)
+weightVec = generate_initial_weights_vector(polynom_order,matrixA,vec_B)    
 print("Initial weights:")
 print(weightVec)
 
