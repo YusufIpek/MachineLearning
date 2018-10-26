@@ -3,10 +3,10 @@ import random as rand
 import math
 from matplotlib import pyplot
 
-N = 20
+N = 1000
 c = 6
-Lambda = 0   # for regularization 
-polynom_order = 4
+Lambda = 18   # for regularization 
+polynom_order = 9
 
 def quadratic_func(x, epsilon):
     return x**2 + x + c + epsilon
@@ -37,7 +37,7 @@ def generate_data_set():
     x_values = []
     epsilon_vec = create_epsilon_vector(0,0.1)
     for i in range(0, N):
-        x_values.append(i)
+        x_values.append(i/(N/10))
     #epsilon,_ = compute_epsilon(x_values)
     
     y_values = []
@@ -145,7 +145,7 @@ Vec_T = predict_t_value(phi, weightVec)
 #print("T Vector")
 #print(Vec_T)
 
-newWeightVec = compute_new_weights(phi, Vec_T,Lambda)
+newWeightVec = compute_new_weights(phi, y_values,Lambda)
 print("New Weight")
 print(newWeightVec)
 
