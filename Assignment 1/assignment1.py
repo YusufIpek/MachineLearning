@@ -3,13 +3,13 @@ import random as rand
 import math
 from matplotlib import pyplot
 
-N = 100
+N = 1000
 c = 6
 Lambda = 18   # for regularization 
 polynom_order = 9
 
 
-check_case = 2
+check_case = 1
 
 def quadratic_func(x, epsilon):
     return x**2 + x + c + epsilon
@@ -165,7 +165,7 @@ Vec_T = predict_t_value(phi, weightVec)
 #print("T Vector")
 #print(Vec_T)
 
-newWeightVec = compute_new_weights(phi, Vec_T,Lambda)
+newWeightVec = compute_new_weights(phi, y_values,Lambda)
 #print("New Weight")
 #print(newWeightVec)
 
@@ -183,6 +183,7 @@ new_Y = np.matmul( phi,newWeightVec )
 plot_points(x_values,y_values)       
 plot_points(x_values,new_Y,'red')
 #plot_points(x_values,y_values) 
+
 
 
 erms = root_mean_square_error(new_Y, y_values)      
