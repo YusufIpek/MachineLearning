@@ -3,7 +3,7 @@ import random as rand
 import math
 from matplotlib import pyplot
 
-N = 500
+N = 100
 c = 6
 Lambda = 3   # for regularization 
 polynom_order = 3
@@ -12,14 +12,18 @@ def quadratic_func(x):
     return x**2 + x + c
 
 def create_epsilon_vector(variance,mean):
+    mean = 0
+    variance = 0.1
     epsilon_vec = np.random.normal(mean,variance,N)
-    print(epsilon_vec)
+    count, bins, ignored = pyplot.hist(epsilon_vec, 30, density=True)
+    pyplot.plot(bins, 1/(variance * np.sqrt(2 * np.pi)) *np.exp( - (bins - mean)**2 / (2 * variance**2) ),linewidth=2, color='r')
+    pyplot.show()
+    #print(epsilon_vec)
     return epsilon_vec
 
 def compute_epsilon(x_values):
     if len(x_values) == 0:
         return -1
-    
     sum_of_x = 0
     for x in x_values:
        sum_of_x += x
