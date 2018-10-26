@@ -3,7 +3,7 @@ import random as rand
 import math
 from matplotlib import pyplot
 
-N = 100
+N = 500
 c = 6
 Lambda = 3   # for regularization 
 polynom_order = 3
@@ -25,7 +25,7 @@ def compute_epsilon(x_values):
     for x in x_values:
         normalized_sum += (x-mean)**2
     
-    return normalized_sum/len(x_values)
+    return (normalized_sum/len(x_values)),mean
     
         
     
@@ -35,7 +35,7 @@ def generate_data_set():
     
     for i in range(0, N):
         x_values.append(i)
-    epsilon = compute_epsilon(x_values)
+    epsilon,_ = compute_epsilon(x_values)
     
     y_values = []
     for i in range(0, N):        
@@ -105,7 +105,6 @@ def compute_new_weights(phi, predicted_values,Lambda):
     return np.matmul( tmp,predicted_values )
 
 def plot_points(data_x,data_y,clr = 'blue'): 
-    
     pyplot.scatter(data_x,data_y)
     pyplot.scatter(data_x,data_y,color=clr)
     pyplot.show()
