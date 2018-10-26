@@ -7,9 +7,7 @@ N = 100
 c = 6
 Lambda = 18   # for regularization 
 polynom_order = 9
-
-
-check_case = 1
+check_case = 2
 
 def quadratic_func(x, epsilon):
     return x**2 + x + c + epsilon
@@ -33,21 +31,18 @@ def compute_epsilon(x_values):
     normalized_sum = 0
     for x in x_values:
         normalized_sum += (x-mean)**2
-    return (normalized_sum/len(x_values)),mean
-    
+    return (normalized_sum/len(x_values)),mean    
 
 def generate_data_set():
     x_values = []
     epsilon_vec = create_epsilon_vector(0,0.1)
     for i in range(0, N):
         x_values.append(i/(N/10))
-    #epsilon,_ = compute_epsilon(x_values)
-    
+    #epsilon,_ = compute_epsilon(x_values)    
     y_values = []
     for i in range(0, N):        
         y_values.append(quadratic_func(i, epsilon_vec[rand.randint(0,N*N-1)]))
         #print("Range:", i , " | Quadradit Value: " , val)
-        
     plot_points(x_values,y_values)
     return x_values,y_values
 
@@ -73,10 +68,7 @@ def error_func(predictate_values, actual_values):
     return math.sqrt(mean_error)
 
 def computed_phi(x_values, order):
-    # for each x value in vector of x_values we loop and make phi vector for each x
-    
-    big_phi_Mat = []
-    
+    big_phi_Mat = []    
     for x in x_values:
         small_phi_Vec = []
         for i in range(0,order+1):
@@ -122,7 +114,6 @@ def compute_new_weights(phi, predicted_values,Lambda):
     return np.matmul( tmp,predicted_values )
 
 def plot_points(data_x,data_y,clr = 'blue'): 
-    #pyplot.scatter(data_x,data_y)
     pyplot.scatter(data_x,data_y,color=clr)
     pyplot.show()
 
@@ -145,10 +136,7 @@ def root_mean_square_error(predicted_values, y_values, weights):
 x_values,y_values = generate_data_set()
 variance, mean = compute_epsilon(x_values)    
 epsilon_vec = create_epsilon_vector(variance, mean)
-#print(data_set)
 matrixA = np.array(generate_general_A_matrix(polynom_order, x_values) )
-#print("A matrix:")
-#print(matrixA)
 
 if check_case == 1:
     #case1
@@ -158,39 +146,17 @@ else:
     #case2
     weightVec = generate_initial_weights_randomly(polynom_order)
     vec_B = compute_b_matrix(matrixA, weightVec)
-#print("Initial weights:")
-#print(weightVec)
-#print("B Vector:")
-#print(vec_B)
 
 phi = np.array(computed_phi(x_values, polynom_order) )
-#print("Phi:")#design Matrix
-#print(phi)
-
 Vec_T = predict_t_value(phi, weightVec)
-#print("T Vector")
-#print(Vec_T)
-
 newWeightVec = compute_new_weights(phi, y_values,Lambda)
-#print("New Weight")
-#print(newWeightVec)
 
 new_Vec_T = predict_t_value(phi, newWeightVec)
-#print("T Vector")
-#print(Vec_T)
-
 B_temp = np.matmul((np.transpose(phi)),new_Vec_T)
-#print("B tmppp")
-#print(B_temp)
-
 new_Y = np.matmul( phi,newWeightVec )
-#print("New Y values")
-#print(new_Y) 
+
 plot_points(x_values,y_values)       
 plot_points(x_values,new_Y,'red')
-#plot_points(x_values,y_values) 
-
-
 
 erms = root_mean_square_error(new_Y, y_values, newWeightVec)      
 print("Root-Mean-Square-Error")
