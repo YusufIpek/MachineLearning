@@ -3,10 +3,13 @@ import random as rand
 import math
 from matplotlib import pyplot
 
-N = 1000
+N = 10000
 c = 6
 Lambda = 0   # for regularization 
 polynom_order = 9
+
+
+check_case = 2
 
 def quadratic_func(x, epsilon):
     return x**2 + x + c + epsilon
@@ -92,12 +95,15 @@ def generate_general_A_matrix(m_order, x_values):
     return A
 
 def generate_initial_weights_vector(polynom_order,A,b):
-    #weights_vec = []
-    #for i in range(0,polynom_order+1):
-     #   weights_vec.append(rand.random())
-    #return weights_vec
     return np.matmul(A,b)
+
+def generate_initial_weights_randomly(polynom_order):
+    weights_vec = []
+    for i in range(0,polynom_order+1):
+        weights_vec.append(rand.random())
+    return weights_vec
     
+
 def generate_b_vec(x_values,y_values,polynom_order):
     B = []
     for i in range(0,polynom_order+1):
@@ -137,14 +143,19 @@ epsilon_vec = create_epsilon_vector(variance, mean)
 matrixA = np.array(generate_general_A_matrix(polynom_order, x_values) )
 #print("A matrix:")
 #print(matrixA)
-vec_B = generate_b_vec(x_values,y_values,polynom_order)
-weightVec = generate_initial_weights_vector(polynom_order,matrixA,vec_B)    
-print("Initial weights:")
-print(weightVec)
 
-bVec = compute_b_matrix(matrixA, weightVec)
+if check_case == 1:
+    #case1
+    vec_B = generate_b_vec(x_values,y_values,polynom_order)
+    weightVec = generate_initial_weights_vector(polynom_order,matrixA,vec_B)
+else:    
+    #case2
+    weightVec = generate_initial_weights_randomly(polynom_order)
+    vec_B = compute_b_matrix(matrixA, weightVec)
+#print("Initial weights:")
+#print(weightVec)
 #print("B Vector:")
-#print(bVec)
+#print(vec_B)
 
 phi = np.array(computed_phi(x_values, polynom_order) )
 #print("Phi:")#design Matrix
@@ -154,9 +165,9 @@ Vec_T = predict_t_value(phi, weightVec)
 #print("T Vector")
 #print(Vec_T)
 
-newWeightVec = compute_new_weights(phi, y_values,Lambda)
-print("New Weight")
-print(newWeightVec)
+newWeightVec = compute_new_weights(phi, Vec_T,Lambda)
+#print("New Weight")
+#print(newWeightVec)
 
 new_Vec_T = predict_t_value(phi, newWeightVec)
 #print("T Vector")
@@ -167,12 +178,15 @@ B_temp = np.matmul((np.transpose(phi)),new_Vec_T)
 #print(B_temp)
 
 new_Y = np.matmul( phi,newWeightVec )
-print("New Y values")
+#print("New Y values")
 #print(new_Y) 
+plot_points(x_values,y_values)       
 plot_points(x_values,new_Y,'red')
+<<<<<<< HEAD
 #plot_points(x_values,y_values) 
 
 
 erms = root_mean_square_error(new_Vec_T, y_values)      
 print("Root-Mean-Square-Error")
 print(erms)
+
