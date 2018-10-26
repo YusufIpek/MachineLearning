@@ -100,14 +100,11 @@ def generate_initial_weights_vector(polynom_order,A,b):
     
 def generate_b_vec(x_values,y_values,polynom_order):
     B = []
-    sum_y = 0
-    for y in y_values:
-        sum_y += y
-    sum_x = 0
-    for x in x_values:
-        sum_x += x
     for i in range(0,polynom_order+1):
-        B.append(sum_y*(sum_x**i))
+        sum_y = 0
+        for index,y in enumerate(y_values):
+            sum_y += y + x_values[index]**i
+        B.append(sum_y )
     return np.array(B)
 
 def compute_new_weights(phi, predicted_values,Lambda):
