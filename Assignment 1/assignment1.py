@@ -1,6 +1,7 @@
 import numpy as np
 import random as rand
 import math
+from matplotlib import pyplot
 
 N = 10
 c = 6
@@ -28,19 +29,19 @@ def compute_epsilon(x_values):
     
 
 def generate_data_set():
-    tmp_data_set = []
+    x_values = []
     
     for i in range(0, N):
-        tmp_data_set.append(i)
-    epsilon = compute_epsilon(tmp_data_set)
+        x_values.append(i)
+    epsilon = compute_epsilon(x_values)
     
-    data_set = []
+    y_values = []
     for i in range(0, N):        
         val = quadratic_func(i)
         #print("Range:", i , " | Quadradit Value: " , val)
-        data_set.append(val+epsilon)
-    
-    return data_set
+        y_values.append(val+epsilon)
+    plot_points(x_values,y_values)
+    return x_values,y_values
 
 
 def sigma(order, x_values):
@@ -86,7 +87,7 @@ def computed_phi(x_values, order):
     return big_phi_Mat
 
 
-def generate_weights_vector(polynom_order):
+def generate_initial_weights_vector(polynom_order):
     weights_vec = []
     for i in range(0,polynom_order+1):
         weights_vec.append(rand.random())
@@ -97,16 +98,19 @@ def compute_new_weights(phi, predicted_values):
     tmp = np.linalg.inv(np.matmul(np.transpose(phi),phi))
     tmp = np.matmul(tmp,np.transpose(phi))
     return np.matmul( tmp,predicted_values )
-        
 
-data_set = generate_data_set()
-polynom_order = 2
-print(data_set)
-matrixA = np.array(generate_general_A_matrix(polynom_order, data_set) )
+def plot_points(data_x,data_y):   
+    pyplot.scatter(data_x,data_y)
+    pyplot.show()        
+
+x_values,y_values = generate_data_set()
+polynom_order = 3
+#print(data_set)
+matrixA = np.array(generate_general_A_matrix(polynom_order, x_values) )
 print("A matrix:")
 print(matrixA)
   
-weightVec = generate_weights_vector(polynom_order)    
+weightVec = generate_initial_weights_vector(polynom_order)    
 print("Initial weights:")
 print(weightVec)
 
@@ -114,8 +118,8 @@ bVec = compute_b_matrix(matrixA, weightVec)
 print("B Vector:")
 print(bVec)
 
-phi = np.array(computed_phi(data_set, polynom_order) )
-print("Phi:")
+phi = np.array(computed_phi(x_values, polynom_order) )
+print("Phi:")#design Matrix
 print(phi)
 
 Vec_T = predict_t_value(phi, weightVec)
