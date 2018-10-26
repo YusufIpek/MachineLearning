@@ -3,17 +3,19 @@ import random as rand
 import math
 from matplotlib import pyplot
 
-N = 500
+N = 10
 c = 6
 Lambda = 3   # for regularization 
-polynom_order = 3
+polynom_order = 4
 
-def quadratic_func(x):
-    return x**2 + x + c
+def quadratic_func(x, epsilon):
+    return x**2 + x + c + epsilon
 
-def create_epsilon_vector(variance,mean):
-    epsilon_vec = np.random.normal(mean,variance,N)
-    print(epsilon_vec)
+def create_epsilon_vector():
+    mean = 0
+    sigma = 0.1
+    samples = N*N
+    epsilon_vec = np.random.normal(mean,sigma,samples)
     return epsilon_vec
 
 def compute_epsilon(x_values):
@@ -28,22 +30,21 @@ def compute_epsilon(x_values):
     normalized_sum = 0
     for x in x_values:
         normalized_sum += (x-mean)**2
-    
     return (normalized_sum/len(x_values)),mean
     
 
 def generate_data_set():
     x_values = []
-    
+    epsilon_vec = create_epsilon_vector()
     for i in range(0, N):
         x_values.append(i)
-    epsilon,_ = compute_epsilon(x_values)
+    #epsilon,_ = compute_epsilon(x_values)
     
     y_values = []
     for i in range(0, N):        
-        val = quadratic_func(i)
+        y_values.append(quadratic_func(i, epsilon_vec[rand.randint(0,N*N-1)]))
         #print("Range:", i , " | Quadradit Value: " , val)
-        y_values.append(val+epsilon)
+        
     plot_points(x_values,y_values)
     return x_values,y_values
 
@@ -114,7 +115,7 @@ def plot_points(data_x,data_y,clr = 'blue'):
 
 x_values,y_values = generate_data_set()
 variance, mean = compute_epsilon(x_values)    
-epsilon_vec = create_epsilon_vector(variance, mean)
+#epsilon_vec = create_epsilon_vector(variance, mean)
 #print(data_set)
 matrixA = np.array(generate_general_A_matrix(polynom_order, x_values) )
 #print("A matrix:")
