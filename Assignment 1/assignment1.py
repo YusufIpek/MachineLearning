@@ -3,7 +3,7 @@ import random as rand
 import math
 from matplotlib import pyplot
 
-N = 1000
+N = 100
 c = 6
 Lambda = 18   # for regularization 
 polynom_order = 9
@@ -127,10 +127,16 @@ def plot_points(data_x,data_y,clr = 'blue'):
     pyplot.show()
 
 
-def root_mean_square_error(predicted_values, y_values):
+def root_mean_square_error(predicted_values, y_values, weights):
     sum_error = 0
+    weights_norm = 0
+    sum_weights = 0
+    for weight in weights:
+        sum_weights += weight**2
+    weights_norm = math.sqrt(sum_weights)
+    
     for i in range(0,len(predicted_values)):
-        sum_error += (predicted_values[i]-y_values[i])**2
+        sum_error += (predicted_values[i]-y_values[i])**2 + (Lambda*(weights_norm**2))/2
     erms = math.sqrt((2*sum_error)/len(predicted_values))
     return erms
     
@@ -186,7 +192,7 @@ plot_points(x_values,new_Y,'red')
 
 
 
-erms = root_mean_square_error(new_Y, y_values)      
+erms = root_mean_square_error(new_Y, y_values, newWeightVec)      
 print("Root-Mean-Square-Error")
 print(erms)
 
