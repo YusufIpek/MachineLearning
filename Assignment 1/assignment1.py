@@ -127,10 +127,10 @@ def root_mean_square_error(predicted_values, y_values, weights, mLambda):
     weights_norm = math.sqrt(sum_weights)
     
     for i in range(0,len(predicted_values)):
-        diff = (predicted_values[i]-y_values[i])**2
-        lambda_term = (mLambda*(weights_norm**2))/2
-        sum_error += diff + lambda_term
-    erms = math.sqrt((sum_error)/len(predicted_values))
+        sum_error += (predicted_values[i]-y_values[i])**2     
+        
+    lambda_term = (mLambda*(weights_norm**2))/2
+    erms = math.sqrt((sum_error+lambda_term)/len(predicted_values))
     return erms
     
         
