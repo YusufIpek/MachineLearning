@@ -3,10 +3,10 @@ import random as rand
 import math
 from matplotlib import pyplot
 
-N = 10
+N = 100
 c = 6
 Lambda = 5   # for regularization 
-polynom_order = 3
+polynom_order = 9
 check_case = 2
 
 def quadratic_func(x, epsilon):
@@ -130,10 +130,9 @@ def root_mean_square_error(predicted_values, y_values, weights, mLambda):
         sum_error += (predicted_values[i]-y_values[i])**2     
         
     lambda_term = (mLambda*(weights_norm**2))/2
-    erms = math.sqrt((sum_error+lambda_term)/len(predicted_values))
+    erms = math.sqrt((sum_error+abs(lambda_term) )/len(predicted_values))
     return erms
     
-        
 def erms_plot_k_folds(x_values, y_values, k, lambda_max):
     erms_list = []
     erms_sum = 0
