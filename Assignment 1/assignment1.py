@@ -3,10 +3,10 @@ import random as rand
 import math
 from matplotlib import pyplot
 
-N = 100
+N = 10
 c = 6
-Lambda = 18   # for regularization 
-polynom_order = 9
+Lambda = 5   # for regularization 
+polynom_order = 3
 check_case = 2
 
 def quadratic_func(x, epsilon):
@@ -118,7 +118,7 @@ def plot_points(data_x,data_y,clr = 'blue'):
     pyplot.show()
 
 
-def root_mean_square_error(predicted_values, y_values, weights):
+def root_mean_square_error(predicted_values, y_values, weights, mLambda):
     sum_error = 0
     weights_norm = 0
     sum_weights = 0
@@ -127,15 +127,73 @@ def root_mean_square_error(predicted_values, y_values, weights):
     weights_norm = math.sqrt(sum_weights)
     
     for i in range(0,len(predicted_values)):
-        sum_error += (predicted_values[i]-y_values[i])**2 + (Lambda*(weights_norm**2))/2
-    erms = math.sqrt((2*sum_error)/len(predicted_values))
+        diff = (predicted_values[i]-y_values[i])**2
+        lambda_term = (mLambda*(weights_norm**2))/2
+        sum_error += diff + lambda_term
+    erms = math.sqrt((sum_error)/len(predicted_values))
     return erms
     
         
+def erms_plot_k_folds(x_values, y_values, k, lambda_max):
+    erms_list = []
+    erms_sum = 0
+    group_size = int(len(x_values)/k)
+    if k > 1:
+        for l in range(0,lambda_max):
+            for i in range(0,k-1):
+                if i == k-1:
+                    #last iteration should get the rest
+                    training_x_values = x_values[i*group_size:len(x_values)]
+                    training_y_values = y_values[i*group_size:len(y_values)]
+                else: 
+                    training_x_values = x_values[i*group_size:(i*group_size)+group_size]
+                    training_y_values = y_values[i*group_size:(i*group_size)+group_size]
+                
+                #generate phi with new training x values
+                phi = np.array(computed_phi(training_x_values, polynom_order))
+                #compute new weight with new training y values
+                newWeightVec = compute_new_weights(phi, training_y_values,l)
+                
+                tmp_x_values = []
+                tmp_y_values = []
+                if i == k-1:    
+                    tmp_x_values = x_values[0:i*group_size]
+                    tmp_y_values = y_values[0:i*group_size]
+                elif i == 0:
+                    tmp_x_values = x_values[group_size:len(x_values)]
+                    tmp_y_values = y_values[group_size:len(y_values)]
+                else:
+                    tmp_x_values = x_values[0:i*group_size]
+                    tmp_x_values.extend(x_values[i*group_size + group_size:len(x_values)])
+                    
+                    tmp_y_values = y_values[0:i*group_size]
+                    tmp_y_values.extend(y_values[i*group_size + group_size:len(y_values)])
+                
+                matrixA = np.array(generate_general_A_matrix(polynom_order, tmp_x_values))
+                predictedY = compute_b_matrix(matrixA, newWeightVec)
+                #new_Y = np.matmul(phi,newWeightVec)
+        
+                
+                erms_sum += root_mean_square_error(predictedY, tmp_y_values, newWeightVec, l)
+            mean_erms = erms_sum/(k-1)
+            erms_list.append(mean_erms)
+    else:
+        
+        for l in range(0,lambda_max):
+            phi = np.array(computed_phi(x_values, polynom_order))
+            newWeightVec = compute_new_weights(phi, y_values,l)
+            erms_list.append(root_mean_square_error(new_Y, y_values, newWeightVec, l))
+        
+    plot_points([i for i in range(0,lambda_max)], erms_list)
+        
+
+
+
 
 x_values,y_values = generate_data_set()
-variance, mean = compute_epsilon(x_values)    
-epsilon_vec = create_epsilon_vector(variance, mean)
+#not used
+#variance, mean = compute_epsilon(x_values)
+#epsilon_vec = create_epsilon_vector(variance, mean)
 matrixA = np.array(generate_general_A_matrix(polynom_order, x_values) )
 
 if check_case == 1:
@@ -158,7 +216,8 @@ new_Y = np.matmul( phi,newWeightVec )
 plot_points(x_values,y_values)       
 plot_points(x_values,new_Y,'red')
 
-erms = root_mean_square_error(new_Y, y_values, newWeightVec)      
+erms = root_mean_square_error(new_Y, y_values, newWeightVec, -Lambda)      
 print("Root-Mean-Square-Error")
 print(erms)
 
+erms_plot_k_folds(x_values, y_values, 2, 10)
