@@ -117,6 +117,12 @@ def plot_points(data_x,data_y,clr = 'blue'):
     pyplot.scatter(data_x,data_y,color=clr)
     pyplot.show()
 
+def plot_points_two_set(data_training_x, data_training_y, data_test_x, data_test_y):
+    training = pyplot.scatter(data_training_x, data_training_y, color='blue')
+    test = pyplot.scatter(data_test_x, data_test_y, color='red')
+    pyplot.legend((training, test),('Traning', 'Test'))
+    pyplot.show()
+
 
 def root_mean_square_error(predicted_values, y_values, weights, mLambda):
     sum_error = 0
@@ -135,10 +141,13 @@ def root_mean_square_error(predicted_values, y_values, weights, mLambda):
     
 def erms_plot_k_folds(x_values, y_values, k, lambda_max):
     erms_list = []
-    erms_sum = 0
+    erms_list_trainings_set = []
+
     group_size = int(len(x_values)/k)
     if k > 1:
         for l in range(0,lambda_max):
+            erms_sum = 0
+            erms_sum_training_set = 0
             for i in range(0,k-1):
                 if i == k-1:
                     #last iteration should get the rest
@@ -171,11 +180,15 @@ def erms_plot_k_folds(x_values, y_values, k, lambda_max):
                 matrixA = np.array(generate_general_A_matrix(polynom_order, tmp_x_values))
                 predictedY = compute_b_matrix(matrixA, newWeightVec)
                 #new_Y = np.matmul(phi,newWeightVec)
-        
-                
                 erms_sum += root_mean_square_error(predictedY, tmp_y_values, newWeightVec, l)
+                
+                matrixAOfTrainSet = np.array(generate_general_A_matrix(polynom_order, training_x_values))
+                predictedYOfTrainSet = compute_b_matrix(matrixAOfTrainSet, newWeightVec)
+                erms_sum_training_set += root_mean_square_error(predictedYOfTrainSet, training_y_values, newWeightVec, l)
             mean_erms = erms_sum/(k-1)
             erms_list.append(mean_erms)
+            mean_erms_of_training_set = erms_sum_training_set/(k-1)
+            erms_list_trainings_set.append(mean_erms_of_training_set)
     else:
         
         for l in range(0,lambda_max):
@@ -183,7 +196,9 @@ def erms_plot_k_folds(x_values, y_values, k, lambda_max):
             newWeightVec = compute_new_weights(phi, y_values,l)
             erms_list.append(root_mean_square_error(new_Y, y_values, newWeightVec, l))
         
-    plot_points([i for i in range(0,lambda_max)], erms_list)
+    #plot_points([i for i in range(0,lambda_max)], erms_list)
+    lambda_set = [i for i in range(0,lambda_max)]
+    plot_points_two_set(lambda_set, erms_list_trainings_set, lambda_set, erms_list)
         
 
 
