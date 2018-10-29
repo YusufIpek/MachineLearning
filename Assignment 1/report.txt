@@ -1,0 +1,43 @@
+% Assignment 1 - Programming Project: Ridge Regression and Model Selection
+% Kamal Zakieldin, Yusuf Ipek
+% 29th October, 2018
+
+Overview
+========
+
+In this report we are describing our implementation for the ridge regression model and our experiments we have made, first we introduce the used technology and the libraries, then we discuss our tasks illustrating what we have made then showing the results and the values we have got.
+
+Technologies
+===========
+
+* __Python__ as the programming language.
+
+Libraries
+--------------
+This section will give a short overview of the libraries we used.
+
+* __numpy__ provide help working with matrices.
+* __matplotlib__ for all ploting and drawing the figures to visualize our results.
+
+
+Discussion
+===========
+
+
+
+image
+------------------
+
+![This is the caption](/url/of/image.png)
+
+
+table
+------------------
+
+ Right     Left     Center     Default
+-------     ------ ----------   -------
+     12     12        12            12
+    123     123       123          123
+      1     1          1             1
+
+Table:  Demonstration of simple table syntax.
