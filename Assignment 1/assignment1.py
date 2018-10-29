@@ -258,6 +258,66 @@ def plot_with_and_without_regularization(x_values, y_values, lambda_list,polynom
     pyplot.show()        
 
 
+def plot_under_over_fitting(x_values, y_values, polynom_order, k):
+    erms_list = []
+    erms_list_trainings_set = []
+
+    group_size = int(len(x_values)/k)
+    
+    if group_size == 1:
+        sys.exit('[erms_plot_k_folds] K should be choosen so that the training set should at least contain 2 elements!')
+    
+    for m in range(0,polynom_order):
+        erms_sum = 0
+        erms_sum_training_set = 0
+        for i in range(0,k-1):
+            if i == k-1:
+                #last iteration should get the rest
+                training_x_values = x_values[i*group_size:len(x_values)]
+                training_y_values = y_values[i*group_size:len(y_values)]
+            else: 
+                training_x_values = x_values[i*group_size:(i*group_size)+group_size]
+                training_y_values = y_values[i*group_size:(i*group_size)+group_size]
+            
+            #generate phi with new training x values
+            phi = np.array(computed_phi(training_x_values, m))
+            #compute new weight with new training y values
+            newWeightVec = compute_new_weights(phi, training_y_values,0)
+            
+            tmp_x_values = []
+            tmp_y_values = []
+            if i == k-1:    
+                tmp_x_values = x_values[0:i*group_size]
+                tmp_y_values = y_values[0:i*group_size]
+            elif i == 0:
+                tmp_x_values = x_values[group_size:len(x_values)]
+                tmp_y_values = y_values[group_size:len(y_values)]
+            else:
+                tmp_x_values = x_values[0:i*group_size]
+                tmp_x_values.extend(x_values[i*group_size + group_size:len(x_values)])
+                
+                tmp_y_values = y_values[0:i*group_size]
+                tmp_y_values.extend(y_values[i*group_size + group_size:len(y_values)])
+            
+            predictedY = predict_values(newWeightVec, tmp_x_values)
+            erms_sum += root_mean_square_error(predictedY, tmp_y_values, newWeightVec, 0)
+            
+            
+            predictedYOfTrainSet = predict_values(newWeightVec, training_x_values)
+            erms_sum_training_set += root_mean_square_error(predictedYOfTrainSet, training_y_values, newWeightVec, 0)
+        mean_erms = erms_sum/(k-1)
+        erms_list.append(mean_erms)
+        mean_erms_of_training_set = erms_sum_training_set/(k-1)
+        erms_list_trainings_set.append(mean_erms_of_training_set)
+
+        
+    #plot_points([i for i in range(0,lambda_max)], erms_list)
+    polynoms = [i for i in range(0,polynom_order)]
+    plot_points_two_set(polynoms, erms_list_trainings_set, polynoms, erms_list)
+   
+    
+        
+
 def linear_regrssion_model(NUM_Points = 100, Lambda = 5 , polynom_order = 8, k_folds = 6):
     """
         main function to perform the linear regression model.
@@ -293,5 +353,7 @@ def linear_regrssion_model(NUM_Points = 100, Lambda = 5 , polynom_order = 8, k_f
     erms_plot_k_folds(x_values, y_values, k_folds, 36,polynom_order,new_Y)    
     plot_with_and_without_regularization(x_values, y_values, [0,-3,-18,-6000],polynom_order)
 
+    plot_under_over_fitting(x_values, y_values, polynom_order, k_folds)
+
 if __name__ == "__main__":
-    linear_regrssion_model(NUM_Points = 100, Lambda = 5 , polynom_order = 9, k_folds = 10)
+    linear_regrssion_model(NUM_Points = 100, Lambda = 5 , polynom_order = 9, k_folds = 5)
