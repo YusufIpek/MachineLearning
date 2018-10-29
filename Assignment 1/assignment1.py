@@ -214,6 +214,7 @@ def plot_with_and_without_regularization(x_values, y_values, lambda_list):
     counter = 0
     for res in result:
         pyplot.scatter(x_values, res, color=colors[counter])
+        counter += 1
     pyplot.show()        
 
 
@@ -249,4 +250,4 @@ print(erms)
 
 erms_plot_k_folds(x_values, y_values, 2, 10)
 
-plot_with_and_without_regularization(x_values, y_values, [0,5,18,36])
+plot_with_and_without_regularization(x_values, y_values, [0,5,18,-180])
