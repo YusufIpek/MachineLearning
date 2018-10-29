@@ -3,7 +3,7 @@ import random as rand
 import math
 from matplotlib import pyplot
 
-N = 100
+N = 50
 c = 6
 Lambda = 5   # for regularization 
 polynom_order = 9
@@ -210,10 +210,10 @@ def plot_with_and_without_regularization(x_values, y_values, lambda_list):
         bVec = np.matmul(phi, newWeightVec)
         result.append(bVec)
     
-    colors = ['red', 'blue', 'green']
+    colors = ['red', 'blue', 'green', 'yellow']
     counter = 0
     for res in result:
-        pyplot.scatter(x_values, bVec, color=colors[counter])
+        pyplot.scatter(x_values, res, color=colors[counter])
     pyplot.show()        
 
 
