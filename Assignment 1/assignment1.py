@@ -19,9 +19,10 @@ def generate_data_set(N):
     #plot_points(x_values,y_values)
     return x_values,y_values
 
-def create_epsilon_vector(variance=0,mean=0.1,N):
+def create_epsilon_vector(variance,mean,N):
+    
     """
-    using a constant variance = 0 and a mean = 0.1 giving a good normal distributed points
+        using a constant variance = 0 and a mean = 0.1 giving a good normal distributed points
     """
     epsilon_vec = np.random.normal(mean,variance,N*N)
     #count, bins, ignored = pyplot.hist(epsilon_vec, 30, density=True)
@@ -262,7 +263,7 @@ def linear_regrssion_model(NUM_Points = 100, Lambda = 5 , polynom_order = 8):
     
     erms_plot_k_folds(x_values, y_values, 6, 10,polynom_order,new_Y)
     
-    plot_with_and_without_regularization(x_values, y_values, [0,-18,-36,-72])
+    plot_with_and_without_regularization(x_values, y_values, [0,-18,-36,-72],polynom_order)
 
 
 if __name__ == "__main__":
