@@ -73,6 +73,9 @@ def compute_b_matrix(matrixA, weightsVec):
     return np.matmul(matrixA, weightsVec)
 
 def computed_phi(x_values, order):
+    """
+        this function to compute the PHI ( design matrix )
+    """
     big_phi_Mat = []    
     for x in x_values:
         small_phi_Vec = []
@@ -94,6 +97,9 @@ def predict_values(weights, x_values):
     return result
             
 def generate_general_A_matrix(m_order, x_values):
+    """
+        this function to compute the A matrix from the x values
+    """
     coefficient = m_order+1
     A = []
     for i in range(0, coefficient):
@@ -104,6 +110,9 @@ def generate_general_A_matrix(m_order, x_values):
     return A
 
 def generate_initial_weights_randomly(polynom_order):
+    """
+        to calculate the weights randomly
+    """
     weights_vec = []
     for i in range(0,polynom_order+1):
         weights_vec.append(rand.random())
