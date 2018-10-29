@@ -290,8 +290,8 @@ def linear_regrssion_model(NUM_Points = 100, Lambda = 5 , polynom_order = 8, k_f
     Erms = root_mean_square_error(new_Y, y_values, newWeightVec, Lambda)
     print("Erms: ",Erms)      
     
-    erms_plot_k_folds(x_values, y_values, k_folds, 10,polynom_order,new_Y)    
-    plot_with_and_without_regularization(x_values, y_values, [0,-18,-36,-72],polynom_order)
+    erms_plot_k_folds(x_values, y_values, k_folds, 36,polynom_order,new_Y)    
+    plot_with_and_without_regularization(x_values, y_values, [0,-3,-18,-6000],polynom_order)
 
 if __name__ == "__main__":
-    linear_regrssion_model(NUM_Points = 30, Lambda = 5 , polynom_order = 12, k_folds = 10)
+    linear_regrssion_model(NUM_Points = 100, Lambda = 5 , polynom_order = 9, k_folds = 10)
