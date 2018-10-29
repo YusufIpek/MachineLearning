@@ -16,7 +16,7 @@ def generate_data_set(N):
     for i in range(0, N):        
         y_values.append(quadratic_func(i, epsilon_vec[rand.randint(0,N*N-1)]))
         #print("Range:", i , " | Quadradit Value: " , val)
-    plot_points(x_values,y_values)
+    #plot_points(x_values,y_values)
     return x_values,y_values
 
 def create_epsilon_vector(variance=0,mean=0.1,N):
@@ -24,9 +24,9 @@ def create_epsilon_vector(variance=0,mean=0.1,N):
     using a constant variance = 0 and a mean = 0.1 giving a good normal distributed points
     """
     epsilon_vec = np.random.normal(mean,variance,N*N)
-    count, bins, ignored = pyplot.hist(epsilon_vec, 30, density=True)
-    pyplot.plot(bins, 1/(variance * np.sqrt(2 * np.pi)) *np.exp( - (bins - mean)**2 / (2 * variance**2) ),linewidth=2, color='r')
-    pyplot.show()
+    #count, bins, ignored = pyplot.hist(epsilon_vec, 30, density=True)
+    #pyplot.plot(bins, 1/(variance * np.sqrt(2 * np.pi)) *np.exp( - (bins - mean)**2 / (2 * variance**2) ),linewidth=2, color='r')
+    #pyplot.show()
     #print(epsilon_vec)
     return epsilon_vec
 
@@ -78,6 +78,18 @@ def computed_phi(x_values, order):
         big_phi_Mat.append(small_phi_Vec)
     return big_phi_Mat
 
+def predict_values(weights, x_values):
+    result = []
+    for x in x_values:
+        tmp = 0
+        for i in range(0,len(weights)):
+            if i == 0:
+                tmp += weights[i]
+            else:
+                tmp += (x**i) * weights[i]
+        result.append(tmp)
+    return result
+            
 def generate_general_A_matrix(m_order, x_values):
     coefficient = m_order+1
     A = []
@@ -166,15 +178,17 @@ def erms_plot_k_folds(x_values, y_values, k, lambda_max, polynom_order,new_Y):
                     tmp_y_values = y_values[0:i*group_size]
                     tmp_y_values.extend(y_values[i*group_size + group_size:len(y_values)])
                 
-                matrixA = np.array(generate_general_A_matrix(polynom_order, tmp_x_values))
+                #matrixA = np.array(generate_general_A_matrix(polynom_order, tmp_x_values))
                 #trainingsPhi = np.matmul(np.array(computed_phi(tmp_x_values, polynom_order)), newWeightVec)
-                predictedY = compute_b_matrix(matrixA, newWeightVec)
+                #predictedY = compute_b_matrix(matrixA, newWeightVec)
+                predictedY = predict_values(newWeightVec, tmp_x_values)
                 #new_Y = np.matmul(phi,newWeightVec)
                 erms_sum += root_mean_square_error(predictedY, tmp_y_values, newWeightVec, l)
                 
-                matrixAOfTrainSet = np.array(generate_general_A_matrix(polynom_order, training_x_values))
+                #matrixAOfTrainSet = np.array(generate_general_A_matrix(polynom_order, training_x_values))
                 #testPhi = np.matmul(np.array(computed_phi(training_x_values, polynom_order)), newWeightVec)
-                predictedYOfTrainSet = compute_b_matrix(matrixAOfTrainSet, newWeightVec)
+                #predictedYOfTrainSet = compute_b_matrix(matrixAOfTrainSet, newWeightVec)
+                predictedYOfTrainSet = predict_values(newWeightVec, training_x_values)
                 erms_sum_training_set += root_mean_square_error(predictedYOfTrainSet, training_y_values, newWeightVec, l)
             mean_erms = erms_sum/(k-1)
             erms_list.append(mean_erms)
@@ -239,16 +253,16 @@ def linear_regrssion_model(NUM_Points = 100, Lambda = 5 , polynom_order = 8):
     # calculate the new generated Y_values for validating solution
     new_Y = np.matmul( phi,newWeightVec )
     
-    plot_points(x_values,y_values)       
-    plot_points(x_values,new_Y,'red')
+    #plot_points(x_values,y_values)       
+    #plot_points(x_values,new_Y,'red')
     
     erms = root_mean_square_error(new_Y, y_values, newWeightVec, Lambda)      
-    print("Root-Mean-Square-Error")
-    print(erms)
+    #print("Root-Mean-Square-Error")
+    #print(erms)
     
-    erms_plot_k_folds(x_values, y_values, 4, 10,polynom_order,new_Y)
+    erms_plot_k_folds(x_values, y_values, 6, 10,polynom_order,new_Y)
     
-    plot_with_and_without_regularization(x_values, y_values, [0,5,-18,-64],polynom_order)
+    plot_with_and_without_regularization(x_values, y_values, [0,-18,-36,-72])
 
 
 if __name__ == "__main__":
