@@ -39,6 +39,9 @@ def quadratic_func(x, epsilon):
     return x**2 + x + 6 + epsilon
 
 def compute_epsilon(x_values):
+    """
+        this function is to compute the epsilon by calculate the mean and the variance of the x values
+    """
     if len(x_values) == 0:
         return -1
     sum_of_x = 0
@@ -58,18 +61,16 @@ def sigma(order, x_values):
     return result
    
 def predict_t_value(phi,weightsVec):
+    """
+        this function receive the weights and phi to calculate the y using the following equ: Tn = Phi .* W
+    """
     return np.matmul(phi, weightsVec)
 
 def compute_b_matrix(matrixA, weightsVec):
+    """
+        this function compute the b matrix using the follwoing equ: b = A .* W
+    """
     return np.matmul(matrixA, weightsVec)
-
-def error_func(predictate_values, actual_values):
-    sum_error = 0.0
-    for i in range(len(actual_values)):
-        predicted_error = predictate_values[i] - actual_values[i]
-        sum_error += predicted_error**2
-    mean_error = sum_error / float(len(actual_values))
-    return math.sqrt(mean_error)
 
 def computed_phi(x_values, order):
     big_phi_Mat = []    
@@ -253,19 +254,15 @@ def linear_regrssion_model(NUM_Points = 100, Lambda = 5 , polynom_order = 8, k_f
     print(newWeightVec)
     
     # calculate the new generated Y_values for validating solution
-    new_Y = np.matmul( phi,newWeightVec )
-    
+    new_Y = np.matmul( phi,newWeightVec )    
     #plot_points(x_values,y_values)       
     #plot_points(x_values,new_Y,'red')
     
     erms = root_mean_square_error(new_Y, y_values, newWeightVec, Lambda)      
-    print("Root-Mean-Square-Error")
-    print(erms)
+    print("Root-Mean-Square-Error : ", erms)
     
-    erms_plot_k_folds(x_values, y_values, k_folds, 10,polynom_order,new_Y)
-    
+    erms_plot_k_folds(x_values, y_values, k_folds, 10,polynom_order,new_Y)    
     plot_with_and_without_regularization(x_values, y_values, [0,-18,-36,-72],polynom_order)
-
 
 if __name__ == "__main__":
     linear_regrssion_model(NUM_Points = 100, Lambda = 5 , polynom_order = 8, k_folds = 10)
