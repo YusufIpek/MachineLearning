@@ -19,11 +19,26 @@ This section will give a short overview of the libraries we used.
 * __numpy__ provide help working with matrices.
 * __matplotlib__ for all ploting and drawing the figures to visualize our results.
 
-
 Discussion
 ===========
 
+We start our implementation by generating the data set of N points, choosing a quadratic function f(x) using the following equation:
 
+			![](D:\KAMAL\MasterStudies\third semester\ML\Assign\MachineLearning\Assignment 1/images/equ1.png)
+ in the beginning we have created dataset with a very high Y values, however depending on high Y values were really difficult and increased the error, that’s why we used a small X values that subsequently produced better Y values, generating the data set was one of the most underestimated step that affect the performance of our model.
+
+
+
+
+Notices:
+1-	The way of choosing the initial values of the weights vector always affect the final weights vector, choosing a constant initial values like 1 makes the model adjust them slightly without huge difference in the final weights.
+On the other hand, choosing the initial weights randomly makes it produces different weights every trial, specially when we have few number of input points (x values), increasing the number of points in the training set affect the weights values and reduce the differences arises from the random selection of the initial values
+
+2-	In 
+
+
+big line
+======
 
 image
 ------------------
@@ -41,3 +56,4 @@ table
       1     1          1             1
 
 Table:  Demonstration of simple table syntax.
+
