@@ -178,11 +178,13 @@ def erms_plot_k_folds(x_values, y_values, k, lambda_max):
                     tmp_y_values.extend(y_values[i*group_size + group_size:len(y_values)])
                 
                 matrixA = np.array(generate_general_A_matrix(polynom_order, tmp_x_values))
+                #trainingsPhi = np.matmul(np.array(computed_phi(tmp_x_values, polynom_order)), newWeightVec)
                 predictedY = compute_b_matrix(matrixA, newWeightVec)
                 #new_Y = np.matmul(phi,newWeightVec)
                 erms_sum += root_mean_square_error(predictedY, tmp_y_values, newWeightVec, l)
                 
                 matrixAOfTrainSet = np.array(generate_general_A_matrix(polynom_order, training_x_values))
+                #testPhi = np.matmul(np.array(computed_phi(training_x_values, polynom_order)), newWeightVec)
                 predictedYOfTrainSet = compute_b_matrix(matrixAOfTrainSet, newWeightVec)
                 erms_sum_training_set += root_mean_square_error(predictedYOfTrainSet, training_y_values, newWeightVec, l)
             mean_erms = erms_sum/(k-1)
@@ -200,8 +202,19 @@ def erms_plot_k_folds(x_values, y_values, k, lambda_max):
     lambda_set = [i for i in range(0,lambda_max)]
     plot_points_two_set(lambda_set, erms_list_trainings_set, lambda_set, erms_list)
         
-
-
+def plot_with_and_without_regularization(x_values, y_values, lambda_list):
+    phi = np.array(computed_phi(x_values, polynom_order) )
+    result = []
+    for mLambda in lambda_list:
+        newWeightVec = compute_new_weights(phi, y_values,mLambda)
+        bVec = np.matmul(phi, newWeightVec)
+        result.append(bVec)
+    
+    colors = ['red', 'blue', 'green']
+    counter = 0
+    for res in result:
+        pyplot.scatter(x_values, bVec, color=colors[counter])
+    pyplot.show()        
 
 
 x_values,y_values = generate_data_set()
@@ -230,8 +243,10 @@ new_Y = np.matmul( phi,newWeightVec )
 plot_points(x_values,y_values)       
 plot_points(x_values,new_Y,'red')
 
-erms = root_mean_square_error(new_Y, y_values, newWeightVec, -Lambda)      
+erms = root_mean_square_error(new_Y, y_values, newWeightVec, Lambda)      
 print("Root-Mean-Square-Error")
 print(erms)
 
 erms_plot_k_folds(x_values, y_values, 2, 10)
+
+plot_with_and_without_regularization(x_values, y_values, [0,5,18,36])
