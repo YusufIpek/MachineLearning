@@ -267,4 +267,4 @@ def linear_regrssion_model(NUM_Points = 100, Lambda = 5 , polynom_order = 8):
 
 
 if __name__ == "__main__":
-    linear_regrssion_model()
+    linear_regrssion_model(NUM_Points = 100, Lambda = 5 , polynom_order = 20)
