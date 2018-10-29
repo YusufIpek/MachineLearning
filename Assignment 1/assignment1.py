@@ -25,6 +25,7 @@ def create_epsilon_vector(variance,mean,N):
         using a constant variance = 0 and a mean = 0.1 giving a good normal distributed points
     """
     epsilon_vec = np.random.normal(mean,variance,N*N)
+    # for ploting the normal distribution
     #count, bins, ignored = pyplot.hist(epsilon_vec, 30, density=True)
     #pyplot.plot(bins, 1/(variance * np.sqrt(2 * np.pi)) *np.exp( - (bins - mean)**2 / (2 * variance**2) ),linewidth=2, color='r')
     #pyplot.show()
@@ -227,7 +228,7 @@ def plot_with_and_without_regularization(x_values, y_values, lambda_list,polynom
                    'lambda:'+str(lambda_list[3])))
     pyplot.show()        
 
-def linear_regrssion_model(NUM_Points = 100, Lambda = 5 , polynom_order = 8):
+def linear_regrssion_model(NUM_Points = 100, Lambda = 5 , polynom_order = 8, k_folds = 6):
     """
         main function to perform the linear regression model.
         
@@ -236,7 +237,7 @@ def linear_regrssion_model(NUM_Points = 100, Lambda = 5 , polynom_order = 8):
         polynom_order: the M-th polynomial order value
     """
 
-    # TODO: generate data-sets of (x,y) points
+    # generate data-sets of (x,y) points
     x_values,y_values = generate_data_set(NUM_Points)
     
     # generate the known matrices for A.*W = b 
@@ -258,13 +259,13 @@ def linear_regrssion_model(NUM_Points = 100, Lambda = 5 , polynom_order = 8):
     #plot_points(x_values,new_Y,'red')
     
     erms = root_mean_square_error(new_Y, y_values, newWeightVec, Lambda)      
-    #print("Root-Mean-Square-Error")
-    #print(erms)
+    print("Root-Mean-Square-Error")
+    print(erms)
     
-    erms_plot_k_folds(x_values, y_values, 6, 10,polynom_order,new_Y)
+    erms_plot_k_folds(x_values, y_values, k_folds, 10,polynom_order,new_Y)
     
     plot_with_and_without_regularization(x_values, y_values, [0,-18,-36,-72],polynom_order)
 
 
 if __name__ == "__main__":
-    linear_regrssion_model(NUM_Points = 100, Lambda = 5 , polynom_order = 20)
+    linear_regrssion_model(NUM_Points = 100, Lambda = 5 , polynom_order = 8, k_folds = 10)
