@@ -3,10 +3,10 @@ import random as rand
 import math
 from matplotlib import pyplot
 
-N = 50
+N = 100
 c = 6
 Lambda = 5   # for regularization 
-polynom_order = 9
+polynom_order = 20
 check_case = 2
 
 def quadratic_func(x, epsilon):
@@ -212,9 +212,15 @@ def plot_with_and_without_regularization(x_values, y_values, lambda_list):
     
     colors = ['red', 'blue', 'green', 'yellow']
     counter = 0
+    plots = []
     for res in result:
-        pyplot.scatter(x_values, res, color=colors[counter])
+        plots.append(pyplot.scatter(x_values, list(map(lambda x: x/100,res)), color=colors[counter]))
         counter += 1
+    pyplot.legend((plots[0],plots[1],plots[2],plots[3]),
+                  ('lambda:'+str(lambda_list[0]),
+                   'lambda:'+str(lambda_list[1]),
+                   'lambda:'+str(lambda_list[2]),
+                   'lambda:'+str(lambda_list[3])))
     pyplot.show()        
 
 
@@ -248,6 +254,6 @@ erms = root_mean_square_error(new_Y, y_values, newWeightVec, Lambda)
 print("Root-Mean-Square-Error")
 print(erms)
 
-erms_plot_k_folds(x_values, y_values, 2, 10)
+erms_plot_k_folds(x_values, y_values, 4, 10)
 
-plot_with_and_without_regularization(x_values, y_values, [0,5,18,-180])
+plot_with_and_without_regularization(x_values, y_values, [0,5,-18,-64])
