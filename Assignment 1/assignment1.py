@@ -26,6 +26,7 @@ def create_epsilon_vector(variance,mean,N):
         using a constant variance = 0 and a mean = 0.1 giving a good normal distributed points
     """
     epsilon_vec = np.random.normal(mean,variance,N*N)
+    # for ploting the normal distribution
     #count, bins, ignored = pyplot.hist(epsilon_vec, 30, density=True)
     #pyplot.plot(bins, 1/(variance * np.sqrt(2 * np.pi)) *np.exp( - (bins - mean)**2 / (2 * variance**2) ),linewidth=2, color='r')
     #pyplot.show()
@@ -39,6 +40,9 @@ def quadratic_func(x, epsilon):
     return x**2 + x + 6 + epsilon
 
 def compute_epsilon(x_values):
+    """
+        this function is to compute the epsilon by calculate the mean and the variance of the x values
+    """
     if len(x_values) == 0:
         return -1
     sum_of_x = 0
@@ -58,18 +62,16 @@ def sigma(order, x_values):
     return result
    
 def predict_t_value(phi,weightsVec):
+    """
+        this function receive the weights and phi to calculate the y using the following equ: Tn = Phi .* W
+    """
     return np.matmul(phi, weightsVec)
 
 def compute_b_matrix(matrixA, weightsVec):
+    """
+        this function compute the b matrix using the follwoing equ: b = A .* W
+    """
     return np.matmul(matrixA, weightsVec)
-
-def error_func(predictate_values, actual_values):
-    sum_error = 0.0
-    for i in range(len(actual_values)):
-        predicted_error = predictate_values[i] - actual_values[i]
-        sum_error += predicted_error**2
-    mean_error = sum_error / float(len(actual_values))
-    return math.sqrt(mean_error)
 
 def computed_phi(x_values, order):
     big_phi_Mat = []    
@@ -232,7 +234,8 @@ def plot_with_and_without_regularization(x_values, y_values, lambda_list,polynom
                    'lambda:'+str(lambda_list[3])))
     pyplot.show()        
 
-def linear_regrssion_model(NUM_Points = 10, Lambda = 5 , polynom_order = 8):
+
+def linear_regrssion_model(NUM_Points = 100, Lambda = 5 , polynom_order = 8, k_folds = 6):
     """
         main function to perform the linear regression model.
         
@@ -241,7 +244,7 @@ def linear_regrssion_model(NUM_Points = 10, Lambda = 5 , polynom_order = 8):
         polynom_order: the M-th polynomial order value
     """
 
-    # TODO: generate data-sets of (x,y) points
+    # generate data-sets of (x,y) points
     x_values,y_values = generate_data_set(NUM_Points)
     
     # generate the known matrices for A.*W = b 
@@ -257,19 +260,14 @@ def linear_regrssion_model(NUM_Points = 10, Lambda = 5 , polynom_order = 8):
     print(newWeightVec)
     
     # calculate the new generated Y_values for validating solution
-    new_Y = np.matmul( phi,newWeightVec )
-    
+    new_Y = np.matmul( phi,newWeightVec )    
     #plot_points(x_values,y_values)       
     #plot_points(x_values,new_Y,'red')
     
     erms = root_mean_square_error(new_Y, y_values, newWeightVec, Lambda)      
-    #print("Root-Mean-Square-Error")
-    #print(erms)
     
-    erms_plot_k_folds(x_values, y_values, 2, 34,polynom_order,new_Y)
-    
+    erms_plot_k_folds(x_values, y_values, k_folds, 10,polynom_order,new_Y)    
     plot_with_and_without_regularization(x_values, y_values, [0,-18,-36,-72],polynom_order)
 
-
 if __name__ == "__main__":
-    linear_regrssion_model()
+    linear_regrssion_model(NUM_Points = 100, Lambda = 5 , polynom_order = 8, k_folds = 10)
