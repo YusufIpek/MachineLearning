@@ -1,6 +1,7 @@
 import numpy as np
 import random as rand
 import math
+import sys
 from matplotlib import pyplot
 
 def generate_data_set(N):
@@ -146,6 +147,10 @@ def erms_plot_k_folds(x_values, y_values, k, lambda_max, polynom_order,new_Y):
     erms_list_trainings_set = []
 
     group_size = int(len(x_values)/k)
+    
+    if group_size == 1:
+        sys.exit('[erms_plot_k_folds] K should be choosen so that the training set should at least contain 2 elements!')
+    
     if k > 1:
         for l in range(0,lambda_max):
             erms_sum = 0
@@ -203,8 +208,8 @@ def erms_plot_k_folds(x_values, y_values, k, lambda_max, polynom_order,new_Y):
             erms_list.append(root_mean_square_error(new_Y, y_values, newWeightVec, l))
         
     #plot_points([i for i in range(0,lambda_max)], erms_list)
-    lambda_set = [i for i in range(0,lambda_max)]
-    plot_points_two_set(lambda_set, erms_list_trainings_set, lambda_set, erms_list)
+    lambda_set = [-i for i in range(0,lambda_max)]
+    plot_points_two_set(list(reversed(lambda_set)), list(reversed(erms_list_trainings_set)), list(reversed(lambda_set)), list(reversed(erms_list)))
         
 def plot_with_and_without_regularization(x_values, y_values, lambda_list,polynom_order):
     phi = np.array(computed_phi(x_values, polynom_order) )
@@ -227,7 +232,7 @@ def plot_with_and_without_regularization(x_values, y_values, lambda_list,polynom
                    'lambda:'+str(lambda_list[3])))
     pyplot.show()        
 
-def linear_regrssion_model(NUM_Points = 100, Lambda = 5 , polynom_order = 8):
+def linear_regrssion_model(NUM_Points = 10, Lambda = 5 , polynom_order = 8):
     """
         main function to perform the linear regression model.
         
@@ -261,7 +266,7 @@ def linear_regrssion_model(NUM_Points = 100, Lambda = 5 , polynom_order = 8):
     #print("Root-Mean-Square-Error")
     #print(erms)
     
-    erms_plot_k_folds(x_values, y_values, 6, 10,polynom_order,new_Y)
+    erms_plot_k_folds(x_values, y_values, 2, 34,polynom_order,new_Y)
     
     plot_with_and_without_regularization(x_values, y_values, [0,-18,-36,-72],polynom_order)
 
