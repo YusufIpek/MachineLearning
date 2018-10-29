@@ -247,11 +247,14 @@ def plot_with_and_without_regularization(x_values, y_values, lambda_list,polynom
     for res in result:
         plots.append(pyplot.scatter(x_values, list(map(lambda x: x/100,res)), color=colors[counter]))
         counter += 1
-    pyplot.legend((plots[0],plots[1],plots[2],plots[3]),
+    
+    plot_actual_data = pyplot.scatter(x_values, list(map(lambda x: x/100,x_values)), color='black')
+    pyplot.legend((plots[0],plots[1],plots[2],plots[3], plot_actual_data),
                   ('lambda:'+str(lambda_list[0]),
                    'lambda:'+str(lambda_list[1]),
                    'lambda:'+str(lambda_list[2]),
-                   'lambda:'+str(lambda_list[3])))
+                   'lambda:'+str(lambda_list[3]),
+                   'actual data'))
     pyplot.show()        
 
 
@@ -291,4 +294,4 @@ def linear_regrssion_model(NUM_Points = 100, Lambda = 5 , polynom_order = 8, k_f
     plot_with_and_without_regularization(x_values, y_values, [0,-18,-36,-72],polynom_order)
 
 if __name__ == "__main__":
-    linear_regrssion_model(NUM_Points = 100, Lambda = 5 , polynom_order = 8, k_folds = 10)
+    linear_regrssion_model(NUM_Points = 30, Lambda = 5 , polynom_order = 12, k_folds = 10)
