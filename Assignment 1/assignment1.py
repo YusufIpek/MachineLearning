@@ -146,7 +146,6 @@ def plot_points_two_set(data_training_x, data_training_y, data_test_x, data_test
     pyplot.legend((training, test),('Traning', 'Test'))
     pyplot.show()
 
-
 def root_mean_square_error(predicted_values, y_values, weights, mLambda):
     """
         this function to calculate the Error function.
@@ -278,14 +277,15 @@ def linear_regrssion_model(NUM_Points = 100, Lambda = 5 , polynom_order = 8, k_f
     
     # calculate the new Weights using the pseudo-inverse 
     newWeightVec = compute_new_weights(phi, y_values,Lambda)
-    print(newWeightVec)
+    print("Weights Vector: ", newWeightVec)
     
     # calculate the new generated Y_values for validating solution
     new_Y = np.matmul( phi,newWeightVec )    
     #plot_points(x_values,y_values)       
     #plot_points(x_values,new_Y,'red')
     
-    erms = root_mean_square_error(new_Y, y_values, newWeightVec, Lambda)      
+    Erms = root_mean_square_error(new_Y, y_values, newWeightVec, Lambda)
+    print("Erms: ",Erms)      
     
     erms_plot_k_folds(x_values, y_values, k_folds, 10,polynom_order,new_Y)    
     plot_with_and_without_regularization(x_values, y_values, [0,-18,-36,-72],polynom_order)
