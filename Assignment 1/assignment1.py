@@ -35,9 +35,9 @@ def create_epsilon_vector(variance,mean,N):
 
 def quadratic_func(x, epsilon):
     """
-        non-linear quadratic function to generate the points
+        non-linear quadratic function to generate the y value for any received x point ( f(x) function )
     """
-    return x**2 + x + 6 + epsilon
+    return x**2 + x + 6 + epsilon     # ( x^2 + x + const )
 
 def compute_epsilon(x_values):
     """
@@ -55,12 +55,6 @@ def compute_epsilon(x_values):
         normalized_sum += (x-mean)**2
     return (normalized_sum/len(x_values)),mean    
 
-def sigma(order, x_values):
-    result = 0
-    for value in x_values:
-        result += value**order
-    return result
-   
 def predict_t_value(phi,weightsVec):
     """
         this function receive the weights and phi to calculate the y using the following equ: Tn = Phi .* W
@@ -86,6 +80,9 @@ def computed_phi(x_values, order):
     return big_phi_Mat
 
 def predict_values(weights, x_values):
+    """
+        this function used to predict the y values for the error functions
+    """
     result = []
     for x in x_values:
         tmp = 0
@@ -97,6 +94,15 @@ def predict_values(weights, x_values):
         result.append(tmp)
     return result
             
+def sigma(order, x_values):
+    """
+        to perform the summation over sigma used to generate the A matrix
+    """
+    result = 0
+    for value in x_values:
+        result += value**order
+    return result
+   
 def generate_general_A_matrix(m_order, x_values):
     """
         this function to compute the A matrix from the x values
@@ -120,6 +126,9 @@ def generate_initial_weights_randomly(polynom_order):
     return weights_vec
 
 def compute_new_weights(phi, predicted_values,Lambda):
+    """
+        calculate the new Weights using the pseudo-inverse 
+    """
     before_lambda = np.matmul(np.transpose(phi),phi)
     shape_tuple = before_lambda.shape
     regularization_matrix = Lambda*(np.identity(shape_tuple[0]))
@@ -127,7 +136,7 @@ def compute_new_weights(phi, predicted_values,Lambda):
     tmp = np.matmul(tmp,np.transpose(phi))
     return np.matmul( tmp,predicted_values )
 
-def plot_points(data_x,data_y,clr = 'blue'): 
+def plot_points(data_x,data_y,clr = 'blue'):
     pyplot.scatter(data_x,data_y,color=clr)
     pyplot.show()
 
@@ -139,6 +148,9 @@ def plot_points_two_set(data_training_x, data_training_y, data_test_x, data_test
 
 
 def root_mean_square_error(predicted_values, y_values, weights, mLambda):
+    """
+        this function to calculate the Error function.
+    """
     sum_error = 0
     weights_norm = 0
     sum_weights = 0
@@ -150,8 +162,8 @@ def root_mean_square_error(predicted_values, y_values, weights, mLambda):
         sum_error += (predicted_values[i]-y_values[i])**2     
         
     lambda_term = (mLambda*(weights_norm**2))/2
-    erms = math.sqrt((sum_error+abs(lambda_term) )/len(predicted_values))
-    return erms
+    Erms = math.sqrt((sum_error+abs(lambda_term) )/len(predicted_values))
+    return Erms
     
 def erms_plot_k_folds(x_values, y_values, k, lambda_max, polynom_order,new_Y):
     erms_list = []
@@ -162,7 +174,7 @@ def erms_plot_k_folds(x_values, y_values, k, lambda_max, polynom_order,new_Y):
     if group_size == 1:
         sys.exit('[erms_plot_k_folds] K should be choosen so that the training set should at least contain 2 elements!')
     
-    if k > 1:
+    if k > 1: # cross validation can be done
         for l in range(0,lambda_max):
             erms_sum = 0
             erms_sum_training_set = 0
