@@ -11,14 +11,17 @@ from keras.models import Sequential
 from keras.layers import Dense, Dropout, Activation, Flatten
 from keras.layers import Conv2D, MaxPooling2D
 import os
-
 batch_size = 32
 num_classes = 10
 epochs = 100
 data_augmentation = True
 num_predictions = 20
-save_dir = os.path.join(os.getcwd(), 'saved_models')
-model_name = 'keras_cifar10_trained_model.h5'
+
+#current_dir = os.path.dirname(__file__)
+#save_dir = os.path.join(os.getcwd(), 'saved_models')
+#save_dir =  os.path.join(current_dir, 'saved_models')
+
+model_name = 'keras_cifar10_trained_sub_model_128_cell.h5'
 
 # The data, split between train and test sets:
 (x_train, y_train), (x_test, y_test) = cifar10.load_data()
@@ -30,11 +33,12 @@ print(x_test.shape[0], 'test samples')
 y_train = keras.utils.to_categorical(y_train, num_classes)
 y_test = keras.utils.to_categorical(y_test, num_classes)
 
+initial_num_cell = 128
 model = Sequential()
-model.add(Conv2D(32, (3, 3), padding='same',
+model.add(Conv2D(initial_num_cell, (3, 3), padding='same',
                  input_shape=x_train.shape[1:]))
 model.add(Activation('relu'))
-model.add(Conv2D(32, (3, 3)))
+model.add(Conv2D(initial_num_cell, (3, 3)))
 model.add(Activation('relu'))
 model.add(MaxPooling2D(pool_size=(2, 2)))
 model.add(Dropout(0.25))
@@ -65,6 +69,7 @@ x_train = x_train.astype('float32')
 x_test = x_test.astype('float32')
 x_train /= 255
 x_test /= 255
+model.summary()
 
 if not data_augmentation:
     print('Not using data augmentation.')
@@ -127,3 +132,7 @@ print('Saved trained model at %s ' % model_path)
 scores = model.evaluate(x_test, y_test, verbose=1)
 print('Test loss:', scores[0])
 print('Test accuracy:', scores[1])
+
+scores = model.evaluate(x_train, y_train, verbose=1)
+print('train loss:', scores[0])
+print('train accuracy:', scores[1])
