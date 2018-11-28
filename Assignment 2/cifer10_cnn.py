@@ -11,7 +11,7 @@ from keras.models import Sequential
 from keras.layers import Dense, Dropout, Activation, Flatten
 from keras.layers import Conv2D, MaxPooling2D
 import os
-batch_size = 32
+batch_size = 64
 num_classes = 10
 epochs = 100
 data_augmentation = True
@@ -21,7 +21,7 @@ num_predictions = 20
 #save_dir = os.path.join(os.getcwd(), 'saved_models')
 #save_dir =  os.path.join(current_dir, 'saved_models')
 
-model_name = 'keras_cifar10_trained_sub_model_128_cell.h5'
+model_name = 'keras_cifar10_trained_sub_model_128_cell_64_batch.h5'
 
 # The data, split between train and test sets:
 (x_train, y_train), (x_test, y_test) = cifar10.load_data()

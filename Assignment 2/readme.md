@@ -20,6 +20,9 @@ study the following parts:
 
 - writing down all tuning and enhancement done in the code with explaination 
 - prepare the report as early as possible
+- ploting our model
+from keras.utils import plot_model
+plot_model(model, to_file='model.png')
 
 • Give the names of all members of the group. If the members’ contributions differ substantially, explain their
 respective contributions.
