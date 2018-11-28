@@ -34,4 +34,6 @@ We can limit the max norm (absolute value) of the weights for certain layers in 
 	kernel_initializer='normal', kernel_constraint=maxnorm(5)
 Constrain your weights! A big learning rate can result in exploding gradients. Imposing a constraint on network weight — such as max-norm regularization with a size of 5 — has been shown to improve results.
 
+for flatten layers:
 
+we add a flatten layer that takes the output of the CNN and flattens it and passes it as an input to the Dense Layers which passes it to the output layer. 

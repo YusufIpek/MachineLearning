@@ -14,4 +14,6 @@ P.S: We have noticied that the training accuracy was almost the same for 100 epo
 
 P.S: in epoch 67 it achieved the best values : train loss: 0.7117 - train acc: 0.7704 - val loss: 0.5855 - val acc: 0.8123
 
-6 ) 
+6 ) in this trials, we have applied 100 epochs with 64 batch size using 128 number of memory cells of the input layer, as all of these parameters gave a promissing results earlier, and they have achieved a higher accuracy with more than 83.6% for the validation set and 87% for the training set, and achieved the lowest loss around 0.5
+
+7 )  

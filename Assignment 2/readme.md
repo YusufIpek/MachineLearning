@@ -11,9 +11,13 @@ than the original example.
 - trying different examples and options 
 
 study the following parts:
+
 (1) the number of conv-relu layer pairs
+
 (2) dropout layers
+
 (3) pooling parameters, and
+
 (4) minibatch size.
 
 3. Report on your findings.
@@ -21,8 +25,9 @@ study the following parts:
 - writing down all tuning and enhancement done in the code with explaination 
 - prepare the report as early as possible
 - ploting our model
-from keras.utils import plot_model
-plot_model(model, to_file='model.png')
+
+'from keras.utils import plot_model'
+'plot_model(model, to_file='model.png')'
 
 • Give the names of all members of the group. If the members’ contributions differ substantially, explain their
 respective contributions.
