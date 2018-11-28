@@ -21,7 +21,7 @@ num_predictions = 20
 #save_dir = os.path.join(os.getcwd(), 'saved_models')
 #save_dir =  os.path.join(current_dir, 'saved_models')
 
-model_name = 'keras_cifar10_trained_sub_model_128_cell_64_batch.h5'
+model_name = 'keras_cifar10_trained_adam_opt.h5'
 
 # The data, split between train and test sets:
 (x_train, y_train), (x_test, y_test) = cifar10.load_data()
@@ -58,7 +58,7 @@ model.add(Dense(num_classes))
 model.add(Activation('softmax'))
 
 # initiate RMSprop optimizer
-opt = keras.optimizers.rmsprop(lr=0.0001, decay=1e-6)
+opt = keras.optimizers.adam(lr=0.0001, decay=1e-6)
 
 # Let's train the model using RMSprop
 model.compile(loss='categorical_crossentropy',

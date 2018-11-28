@@ -1,3 +1,5 @@
+Tuning a model in deep learning is always a tricky part, we have a lot of hyper-parameters that we can tune, and our model will extremely depend on them, and they are totally depend on the type of the problem the model tries to solve, most of the time following the normal procedures will get a good model, but achieving a very good model without lossing genarlization is a difficult point that need a lot of understanding of your problem, your dataset, and your archticture frame. all these points should drive us to tune our model with the suitable hyper-parameters.
+
 important definations
 
 
@@ -19,6 +21,9 @@ Convolutional layers:  	The convolutional layer is responsible for the convoluti
 
 Dense layers: 			The dense layer is a fully connected layer that give us the output vector of the Network.
 
+Adam optimizer:			adaptive moment estimation, Adam is an optimization algorithm that can used instead of the classical stochastic gradient descent procedure to update network 								weights iterative based in training data, by adapting it is values according to the current state of the weights.
+
+Rmsprop optimizer:		utilizes the magnitude of recent gradients to normalize the gradients. by uses a moving average of the root mean squared gradients. That has an effect of balancing 						the step size — decrease the step for large gradient to avoid exploding, and increase the step for small gradient to avoid vanishing.
 
 
 TIPS
@@ -44,3 +49,7 @@ Constrain your weights! A big learning rate can result in exploding gradients. I
 for flatten layers:
 
 we add a flatten layer that takes the output of the CNN and flattens it and passes it as an input to the Dense Layers which passes it to the output layer. 
+
+for optimization:
+
+using Adam or rmsprop, as they have a very good flixability, ..... ( describe them more ).
