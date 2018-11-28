@@ -2,15 +2,22 @@ important definations
 
 
 Term					Description
-one epoch 				One forward pass and one backward pass of all the training examples
-batch size 				The number of training examples in one forward/backward pass. The higher the batch size, the more memory space you'll need.
-early stopping 			Stop training the model before reaching an overfitting state.
-Dropout 				Dropout is a regulization technique where you turn off part of the network's layers randomally to increase regulization and hense decrease overfitting. 
+
+one epoch: 				One forward pass and one backward pass of all the training examples
+
+batch size:				The number of training examples in one forward/backward pass. The higher the batch size, the more memory space you'll need.
+
+early stopping:			Stop training the model before reaching an overfitting state.
+
+Dropout:				Dropout is a regulization technique where you turn off part of the network's layers randomally to increase regulization and hense decrease overfitting. 
 						We use when the training set accuracy is muuch higher than the test set accuracy.
-Max Pooling  			The maximum output in a rectangular neighbourhood. It is used to make the network more flexible to slight changes and decrease the network computationl expenses
+
+Max Pooling:  			The maximum output in a rectangular neighbourhood. It is used to make the network more flexible to slight changes and decrease the network computationl expenses
 						by extracting the group of pixels that are highly contributing to each feature in the feature maps in the layer.
-Convolutional layers  	The convolutional layer is responsible for the convolutional operation in which feature maps identifies features in the images. 
-Dense layers 			The dense layer is a fully connected layer that give us the output vector of the Network.
+
+Convolutional layers:  	The convolutional layer is responsible for the convolutional operation in which feature maps identifies features in the images. 
+
+Dense layers: 			The dense layer is a fully connected layer that give us the output vector of the Network.
 
 
 

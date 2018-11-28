@@ -14,17 +14,13 @@ model 3: ( keras_cifar10_trained_model_128_cell )
 model 4: ( keras_cifar10_trained_sub_model_128_cell_64_batch )
 
 *IMPORTANT NOTE*  I will always run 10 epochs and check the accuracy and the loss, if it looks promessing and giving a promissing values I will run 100 epochs then.
+
 			* results *
-
 model_num trial		num_epochs		Parameter_name		previous_value		new_value		train_accuracy		test_accuracy		train_loss		test_loss		action
-
-
 1 			0			100				--					--					--				0.79772			 0.7779 			0.6367213		0.70282867 		  --
 2			0			10 				--					--					--				0.65908 		 0.6542 			0.9567476 		0.97330696 		  --
 
 			* done *
-
-
 2			1			10 				batch_size			32					64 				0.57726			 0.575 				1.2242891 		1.2297011 		neglect
 2			2			10 		 num_cells_initial_cnn		32 					128 			0.7216 			 0.7158 			0.79991521 		0.82979323 		apply
 2			3 			10 				batch_size 			32 					64 				0.69456 		 0.6881 			0.8667949 		0.88891986 		promissing to check
