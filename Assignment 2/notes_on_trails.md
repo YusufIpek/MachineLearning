@@ -18,5 +18,7 @@ P.S: in epoch 67 it achieved the best values : train loss: 0.7117 - train acc: 0
 
 7,8 ) in this trial we are trying another optimizer,  the main model was using rmsprop as an optimization function and it has achieved a good results, however, we think that using Adam could be another option that have achieved better results, as Adam has the ability to adapt the learning rate iterativily.
 
-9 ) 
+9 ) Dropout is a regulization technique where you turn off part of the network's layers randomally to increase regulization and hense decrease overfitting. We use when the training set accuracy is muuch higher than the test set accuracy, Too low and you have negligible effects; too high and you underfit.
+so, we have made a small dropout for the input layer, and we tried to increase the dropout ratio layer by layer, and the maximum dropout at our last hidden layer with 50% ratio, this step should help the model to achieve better accuarcy without lossing generalization.
+It has showed a small progress when applying a small dropout, so, I think I will increase the dropout for the input layer.
 

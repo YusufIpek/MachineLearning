@@ -2,26 +2,29 @@
 It gets to 75% validation accuracy in 25 epochs, and 79% after 50 epochs.
 (it's still underfitting at that point, though).
 '''
-
 from __future__ import print_function
+import os
+current_dir = os.path.dirname(__file__)
+save_dir =  os.path.join(current_dir, 'saved_models')
+
+
 import keras
 from keras.datasets import cifar10
 from keras.preprocessing.image import ImageDataGenerator
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Activation, Flatten
 from keras.layers import Conv2D, MaxPooling2D
-import os
 batch_size = 64
 num_classes = 10
 epochs = 100
 data_augmentation = True
 num_predictions = 20
 
-#current_dir = os.path.dirname(__file__)
-#save_dir = os.path.join(os.getcwd(), 'saved_models')
-#save_dir =  os.path.join(current_dir, 'saved_models')
 
-model_name = 'keras_cifar10_trained_adam_opt.h5'
+
+#save_dir = os.path.join(os.getcwd(), 'saved_models')
+
+model_name = 'keras_cifar10_trained_adam_opt_dropout_inLayer.h5'
 
 # The data, split between train and test sets:
 (x_train, y_train), (x_test, y_test) = cifar10.load_data()
@@ -37,6 +40,7 @@ initial_num_cell = 128
 model = Sequential()
 model.add(Conv2D(initial_num_cell, (3, 3), padding='same',
                  input_shape=x_train.shape[1:]))
+model.add(Dropout(0.15))
 model.add(Activation('relu'))
 model.add(Conv2D(initial_num_cell, (3, 3)))
 model.add(Activation('relu'))
@@ -48,7 +52,7 @@ model.add(Activation('relu'))
 model.add(Conv2D(64, (3, 3)))
 model.add(Activation('relu'))
 model.add(MaxPooling2D(pool_size=(2, 2)))
-model.add(Dropout(0.25))
+model.add(Dropout(0.35))
 
 model.add(Flatten())
 model.add(Dense(512))

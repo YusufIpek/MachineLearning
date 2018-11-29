@@ -14,7 +14,7 @@ study the following parts:
 
 (1) the number of conv-relu layer pairs
 
-(2) dropout layers
+(2) dropout layers  ( kamal )
 
 (3) pooling parameters, and
 
@@ -29,6 +29,7 @@ study the following parts:
 'from keras.utils import plot_model'
 'plot_model(model, to_file='model.png')'
 
+for submission:
 • Give the names of all members of the group. If the members’ contributions differ substantially, explain their
 respective contributions.
 
