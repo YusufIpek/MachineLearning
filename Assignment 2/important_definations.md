@@ -3,28 +3,38 @@ Tuning a model in deep learning is always a tricky part, we have a lot of hyper-
 important definations
 
 
-Term					Description
+Term:						Description
 
-one epoch: 				One forward pass and one backward pass of all the training examples
+#one epoch# 				One forward pass and one backward pass of all the training examples
 
-batch size:				The number of training examples in one forward/backward pass. The higher the batch size, the more memory space you'll need.
+#batch size#				The number of training examples in one forward/backward pass. The higher the batch size, the more memory space you'll need.
 
-early stopping:			Stop training the model before reaching an overfitting state.
+#early stopping#			Stop training the model before reaching an overfitting state.
 
-Dropout:				Dropout is a regulization technique where you turn off part of the network's layers randomally to increase regulization and hense decrease overfitting. 
-						We use when the training set accuracy is muuch higher than the test set accuracy.
+#Dropout#					Dropout is a regulization technique where you turn off part of the network's layers randomally to increase regulization and hense decrease overfitting. 
+							We use when the training set accuracy is muuch higher than the test set accuracy.
 
-Max Pooling:  			The maximum output in a rectangular neighbourhood. It is used to make the network more flexible to slight changes and decrease the network computationl expenses
-						by extracting the group of pixels that are highly contributing to each feature in the feature maps in the layer.
+#Max Pooling#	  			The maximum output in a rectangular neighbourhood. It is used to make the network more flexible to slight changes and decrease the network computationl expenses
+							by extracting the group of pixels that are highly contributing to each feature in the feature maps in the layer.
 
-Convolutional layers:  	The convolutional layer is responsible for the convolutional operation in which feature maps identifies features in the images. 
+#Convolutional layers#  	The convolutional layer is responsible for the convolutional operation in which feature maps identifies features in the images. 
 
-Dense layers: 			The dense layer is a fully connected layer that give us the output vector of the Network.
+#Dense layers#	 			The dense layer is a fully connected layer that give us the output vector of the Network.
 
-Adam optimizer:			adaptive moment estimation, Adam is an optimization algorithm that can used instead of the classical stochastic gradient descent procedure to update network 								weights iterative based in training data, by adapting it is values according to the current state of the weights.
+#Adam optimizer#			adaptive moment estimation, Adam is an optimization algorithm that can used instead of the classical stochastic gradient descent procedure to update network 								weights iterative based in training data, by adapting it is values according to the current state of the weights.
 
-Rmsprop optimizer:		utilizes the magnitude of recent gradients to normalize the gradients. by uses a moving average of the root mean squared gradients. That has an effect of balancing 						the step size — decrease the step for large gradient to avoid exploding, and increase the step for small gradient to avoid vanishing.
+#Rmsprop optimizer#			utilizes the magnitude of recent gradients to normalize the gradients. by uses a moving average of the root mean squared gradients. That has an effect of 									balancing the step size — decrease the step for large gradient to avoid exploding, and increase the step for small gradient to avoid vanishing.
 
+
+
+batch_size					
+					 		determines the number of samples in each mini batch. Its maximum is the number of all samples, which makes gradient descent accurate, the loss will decrease towards the minimum if the learning rate is small enough, but iterations are slower. Its minimum is 1, resulting in stochastic gradient descent: Fast but the direction of the gradient step is based only on one example, the loss may jump around. batch_size allows to adjust between the two extremes: accurate gradient direction and fast iteration. Also, the maximum value for batch_size may be limited if your model + data set does not fit into the available (GPU) memory.
+steps_per_epoch 
+							the number of batch iterations before a training epoch is considered finished. If you have a training set of fixed size you can ignore it but it may be useful if you have a huge data set or if you are generating random data augmentations on the fly, i.e. if your training set has a (generated) infinite size. If you have the time to go through your whole training data set I recommend to skip this parameter.
+
+
+FIT_GENERATOR
+One great advantage about fit_generator() besides saving memory is user can integrate random augmentation inside the generator, so it will always provide model with new data to train on the fly.
 
 TIPS
 
