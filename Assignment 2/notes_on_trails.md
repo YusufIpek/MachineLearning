@@ -26,5 +26,6 @@ It has showed a small progress when applying a small dropout, it has reduce the 
 
 12,13 ) normal regularization on the network itself, using L2 regulaizer to regulaize all conv_layers, we have tried for small number of epochs and it was nearly the same as the results without it, so we have increased the number of epochs to give us more insights about using the L2 regulaizer, dropout for input layer was 25%
 
-14,15,16 ) doing a regularization using L2 regulaizer with dropout of 0.15, has not achieve higher progress, the dropout regularization term looks more than enough to panalize the model, so we have neglect using the regularization term.
+14,15,16,17 ) doing a regularization using L2 regulaizer with dropout of 0.15, has not achieve higher progress, the dropout regularization term looks more than enough to panalize the model, so we have neglect using the regularization term.
 
+18,19 ) it is always known that data augmentation is a powerful trick that help in ..., however, during applying the data augmentation, it was clear that the data results was better than the results during the data augmentation.
