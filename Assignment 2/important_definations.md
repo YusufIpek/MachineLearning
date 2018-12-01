@@ -25,6 +25,8 @@ Term:						Description
 
 #Rmsprop optimizer#			utilizes the magnitude of recent gradients to normalize the gradients. by uses a moving average of the root mean squared gradients. That has an effect of 									balancing the step size — decrease the step for large gradient to avoid exploding, and increase the step for small gradient to avoid vanishing.
 
+#Regularization#			regularization is a way of limit the weights values to getting higher values that produce overfitting, regulaization is done by panalize high weights of the 								cooefecients, by adding a penality term.
+							regularization has 2 main types of regularization L1 & L2.
 
 
 batch_size					

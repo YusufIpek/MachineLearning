@@ -24,7 +24,7 @@ the best results are:
 	5		8 			100				--		 			-- 					-- 				0.92114 		 0.8506 			0.238647 		0.4417384 		cur_model
 	5		7 			10 				--		 			-- 					-- 				0.6884 			 0.6796 			0.90928 		0.9351026 		cur_model
 
-	6		10			100			 	--		 			-- 					-- 			 	0.91444 		0.8524 				0.25846557 		0.4306899
+	6		10			100			 	--		 			-- 					-- 			 	0.91444 		0.8524 				0.25846557 		0.4306899 		under_training
 	6		9			10 			 	--		 			-- 					-- 				0.69276 		 0.684 				0.88099228 		0.90294918  	under_training
 
 our trials: 
@@ -39,21 +39,18 @@ our trials:
 	5		7			10 				optimizer 			rmsprop				adam			0.6884 			 0.6796 			0.90928 		0.9351026 		promissing to check
 	5		8 			100 			optimizer 			rmsprop 			adam 			0.92114 		 0.8506 			0.238647 		0.4417384 		apply
 	5		9			10 			dropout_layer			adding dropout in_layer 0.15 	 	0.69276 		 0.684 				0.88099228 		0.90294918 		promissing to check
-	5		10			100 		dropout_layer			adding dropout in_layer 0.15 	 	0.91444 		0.8524 				0.25846557 		0.4306899
-
+	5		10			100 		dropout_layer			adding dropout in_layer 0.15 	 	0.91444 		 0.8524				0.25846557 		0.4306899 	promissing to inc. dropout 
+	5		11			100 		dropout_layer			adding dropout in_layer 0.25 		0.90466 		 0.8462 			0.28886295 		0.456715 		neglect
+	5		12			10 			regularization_term		-- 					L2 		 		0.682 			 0.6715 			0.94805615 		0.9720314 		not clear, inc. epochs
+	5		13			30 			regularization_term		-- 					L2 		 		0.79546 		 0.7727 			0.6204847 		0.68845 		not clear, inc. epochs
+	5		14			100			regularization_term		-- 					L2 		 		
 			* not yet *
 
-
-						10 			regularization_term		--
-						10 			activation_fun_l1
+						10 			data_augmentation		True -> False
 						10 			arch_layer3
-						10 			
+						10 			activation_fun_layer1
 			 			10 			optimizer_rate
 			 			10 			batch_normalization 	--
 			 			10 			Limit weight sizes 		--
 
-train loss: 
-train accuracy: 
-10000/10000 [==============================] - 5s 499us/step
-Test loss: 
-Test accuracy: 
+

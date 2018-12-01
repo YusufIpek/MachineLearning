@@ -18,7 +18,11 @@ P.S: in epoch 67 it achieved the best values : train loss: 0.7117 - train acc: 0
 
 7,8 ) in this trial we are trying another optimizer,  the main model was using rmsprop as an optimization function and it has achieved a good results, however, we think that using Adam could be another option that have achieved better results, as Adam has the ability to adapt the learning rate iterativily.
 
-9 ) Dropout is a regulization technique where you turn off part of the network's layers randomally to increase regulization and hense decrease overfitting. We use when the training set accuracy is muuch higher than the test set accuracy, Too low and you have negligible effects; too high and you underfit.
+9,10 ) Dropout is a regulization technique where you turn off part of the network's layers randomally to increase regulization and hense decrease overfitting. We use when the training set accuracy is muuch higher than the test set accuracy, Too low and you have negligible effects; too high and you underfit.
 so, we have made a small dropout for the input layer, and we tried to increase the dropout ratio layer by layer, and the maximum dropout at our last hidden layer with 50% ratio, this step should help the model to achieve better accuarcy without lossing generalization.
-It has showed a small progress when applying a small dropout, so, I think I will increase the dropout for the input layer.
+It has showed a small progress when applying a small dropout, it has reduce the accuarcy of the training set slightly and increased the accuracy of the test set slightly, which means it has reduce the difference between the training accuracy and the test accuracy, and that encouraged us to increase the dropout for the input layer, as this will regularize the model more and increase the generality without reducing the accuracy.
+
+11 ) trying a dropout of 25% of the input layer, showed that increasing the dropout of the input layer to 25% has reduce the accuracy and increase the loss, which means that increasing the dropout in the input layer has reduced the input features, but it does not achieve better values towards generalizing the model, so we neglect it, and consider the dropout of only 15%.
+
+12,13 ) normal regularization on the network itself, using L2 regulaizer to regulaize all conv_layers, we have tried for small number of epochs and it was nearly the same as the results without it, so we have increased the number of epochs to give us more insights about using the L2 regulaizer.
 
