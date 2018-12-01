@@ -47,11 +47,10 @@ our trials:
 	6		13			30 		dropout 0.25 reg_term		-- 					L2 		 		0.79546 		 0.7727 			0.6204847 		0.68845 	reg&droupout 0.25 not good
 	6		14			10		dropout 0.15 reg_term		-- 					L2 		 		0.68486 		 0.6786 			0.92278288 		0.9466334 		reg&dropout 0.15 better
 	6		15			30		dropout 0.15 reg_term		-- 					L2 		 		0.81056 		 0.7863 			0.5809 			0.6574507 		promissing to check
-	6		16			100		dropout 0.15 reg_term		-- 					L2 		 		
-	6		17			10		without dropout reg_term	-- 					L2 		 		
-	6		18			100		without dropout reg_term	-- 					L2 		 		
-			19			10 			data_augmentation		True 				False
-			20			100			data_augmentation		True 				False
+	6		16			100		dropout 0.15 reg_term		-- 					L2 		 		0.91084 		 0.8484 			0.31013 		0.47525568 		neglect
+	6		17			30		without dropout reg_term	-- 					L2 		 		0.79682 		 0.7736 			0.613128 		0.68806 		neglect
+			18			10 			data_augmentation		True 				False 			
+			19			100			data_augmentation		True 				False 			
 
 			* not yet *
 

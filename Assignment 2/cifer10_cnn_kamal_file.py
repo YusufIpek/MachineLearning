@@ -17,15 +17,15 @@ from keras.layers import Conv2D, MaxPooling2D
 from keras import regularizers
 batch_size = 64
 num_classes = 10
-epochs = 30
-data_augmentation = True
+epochs = 10
+data_augmentation = False
 num_predictions = 20
 
 
 
 #save_dir = os.path.join(os.getcwd(), 'saved_models')
 
-model_name = 'keras_cifar10_trained_adam_opt_dropout_inLayer.h5'
+model_name = 'keras_cifar10_trained_no_DA.h5'
 
 # The data, split between train and test sets:
 (x_train, y_train), (x_test, y_test) = cifar10.load_data()
