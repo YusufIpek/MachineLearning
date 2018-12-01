@@ -17,7 +17,7 @@ from keras.layers import Conv2D, MaxPooling2D
 from keras import regularizers
 batch_size = 64
 num_classes = 10
-epochs = 100
+epochs = 30
 data_augmentation = True
 num_predictions = 20
 
@@ -41,7 +41,7 @@ initial_num_cell = 128
 model = Sequential()
 model.add(Conv2D(initial_num_cell, (3, 3), padding='same',
                  kernel_regularizer=regularizers.l2(1e-4),input_shape=x_train.shape[1:]))
-model.add(Dropout(0.25))
+model.add(Dropout(0.15))
 model.add(Activation('relu'))
 model.add(Conv2D(initial_num_cell, (3, 3),
                  kernel_regularizer=regularizers.l2(1e-4)))

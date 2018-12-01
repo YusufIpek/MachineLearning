@@ -24,5 +24,7 @@ It has showed a small progress when applying a small dropout, it has reduce the 
 
 11 ) trying a dropout of 25% of the input layer, showed that increasing the dropout of the input layer to 25% has reduce the accuracy and increase the loss, which means that increasing the dropout in the input layer has reduced the input features, but it does not achieve better values towards generalizing the model, so we neglect it, and consider the dropout of only 15%.
 
-12,13 ) normal regularization on the network itself, using L2 regulaizer to regulaize all conv_layers, we have tried for small number of epochs and it was nearly the same as the results without it, so we have increased the number of epochs to give us more insights about using the L2 regulaizer.
+12,13 ) normal regularization on the network itself, using L2 regulaizer to regulaize all conv_layers, we have tried for small number of epochs and it was nearly the same as the results without it, so we have increased the number of epochs to give us more insights about using the L2 regulaizer, dropout for input layer was 25%
+
+14,15,16 ) doing a regularization using L2 regulaizer with dropout of 0.15, 
 
