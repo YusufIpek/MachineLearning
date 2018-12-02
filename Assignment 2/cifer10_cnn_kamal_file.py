@@ -11,7 +11,7 @@ import os
 import keras
 from keras.datasets import cifar10
 from keras.preprocessing.image import ImageDataGenerator
-from keras.models import Sequential
+from keras.models import Sequential,load_model
 from keras.layers import Dense, Dropout, Activation, Flatten
 from keras.layers import Conv2D, MaxPooling2D
 from keras import regularizers
@@ -19,7 +19,7 @@ from keras import regularizers
 initial_num_filters = 128
 batch_size = 64
 num_classes = 10
-epochs = 10
+epochs = 100
 data_augmentation = True
 num_predictions = 20
 
@@ -27,7 +27,7 @@ num_predictions = 20
 
 #save_dir = os.path.join(os.getcwd(), 'saved_models')
 
-model_name = 'keras_cifar10_trained_no_DA.h5'
+model_name = 'keras_cifar10_trained_final_w_adam.h5'
 
 # The data, split between train and test sets:
 (x_train, y_train), (x_test, y_test) = cifar10.load_data()
@@ -68,7 +68,7 @@ model.add(Dense(num_classes))
 model.add(Activation('softmax'))
 
 # initiate RMSprop optimizer
-opt = keras.optimizers.rmsprop(lr=0.0001, decay=1e-6)
+opt = keras.optimizers.adam(lr=0.0001, decay=1e-6)
 
 # Let's train the model using RMSprop
 model.compile(loss='categorical_crossentropy',
@@ -135,7 +135,8 @@ else:
 if not os.path.isdir(save_dir):
     os.makedirs(save_dir)
 model_path = os.path.join(save_dir, model_name)
-#model.save(model_path)
+model.save(model_path)
+load_model(model_path)
 print('Saved trained model at %s ' % model_path)
 
 # Score trained model.
@@ -146,4 +147,14 @@ print('train accuracy:', scores[1])
 scores = model.evaluate(x_test, y_test, verbose=1)
 print('Test loss:', scores[0])
 print('Test accuracy:', scores[1])
+
+import os
+os.environ["PATH"] += os.pathsep + 'C:/Program Files (x86)/Graphviz2.38/bin/'
+from keras.utils.vis_utils import plot_model
+plot_model(model,show_shapes=True, to_file='model.png')
+
+from IPython.display import SVG
+from keras.utils.vis_utils import model_to_dot
+
+SVG(model_to_dot(model).create(prog='dot', format='svg'))
 

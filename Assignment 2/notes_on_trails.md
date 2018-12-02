@@ -5,7 +5,7 @@ trials:
 1,3 ) increasing the batch size from 32 to 64 does not give a promissing accuracy, because:
  " The batch size defines the number of samples that will be propagated through the network", as the number of memory cells in the initial input layer was only 32 cell, using 64 input doesn't make any sense, that's why it made lower accuracy.
 
- 2,4 ) increasing the number of memory cells in the initial input layer from 32 to 128 have made a promissing progress, because:
+ 2,4 ) increasing the number of filters in the initial input layer from 32 to 128 have made a promissing progress, because:
 it may depends on how it looks like in the dataset itself, I think maybe most of the pictures are with a bigger size and 32 is not enough number of cells to cover the complete image in the first step, so 128 should cover more and it fits the dataset more.
 
 5 ) run the archticture using 128 cells for 100 epochs was not the best idea, after 40 epochs the model started to overfit the data and the accuracy decreased from 81% to around 75%, and the loss increased from 0.5 to around 0.85, that's why we thought about applying early stoping, by stop training our model before it reach overfitting state, by running only 30 epochs for our model.
@@ -34,4 +34,6 @@ It has showed a small progress when applying a small dropout, it has reduce the 
 
 22, 23 ) checking the number of filters and enhance the code, introducing the number of filters was a tricky part, in the beginning we has not worked smoothly with the number of filters, we were using a high number of filters in the first layer then reduce them in the following layers, but this has limmited our progress, but it is clear that the more layer you got the more complex feature you get then higher number of filters should be good point to consider
 
-24,25,26,27 ) suffering from overfitting
+24,25,26,27 ) suffering from overfitting, because of no dropout, no regularization or no data augmentation
+
+28,29 ) final models, double number of filters, with reg, with dropout , with data augmentation 
