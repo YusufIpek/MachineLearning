@@ -49,8 +49,11 @@ our trials:
 	6		15			30		dropout 0.15 reg_term		-- 					L2 		 		0.81056 		 0.7863 			0.5809 			0.6574507 		promissing to check
 	6		16			100		dropout 0.15 reg_term		-- 					L2 		 		0.91084 		 0.8484 			0.31013 		0.47525568 		neglect
 	6		17			30		without dropout reg_term	-- 					L2 		 		0.79682 		 0.7736 			0.613128 		0.68806 		neglect
-			18			10 		data_augmentation with reg	True 				False 			0.73772			 0.7033 			0.80808064 		0.8855037 		promissing to apply
-			19			100		data_augmentation no reg	True 				False 			
+
+	7		18			10 		data_augmentation with reg	True 				False 			0.73772			 0.7033 			0.80808064 		0.8855037 		promissing to apply
+			20			100		data_augmentation with reg	True 				False 
+	8		19			10		data_augmentation no reg	True 				False 			0.75288 		 0.7174 			0.75784913 		0.8365525 	best accuracy with 10 epochs
+			21			100		data_augmentation no reg	True 				False 			
 
 			* not yet *
 
@@ -60,5 +63,6 @@ our trials:
 			 			10 			optimizer_rate
 			 			10 			batch_normalization 	--
 			 			10 			Limit weight sizes 		--
+
 
 

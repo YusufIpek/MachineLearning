@@ -28,4 +28,4 @@ It has showed a small progress when applying a small dropout, it has reduce the 
 
 14,15,16,17 ) doing a regularization using L2 regulaizer with dropout of 0.15, has not achieve higher progress, the dropout regularization term looks more than enough to panalize the model, so we have neglect using the regularization term.
 
-18,19 ) it is always known that data augmentation is a powerful trick that help in ..., however, during applying the data augmentation, it was clear that the data results was better than the results during the data augmentation.
+18,19 ) it is always known that data augmentation is a powerful trick that help in ..., however, during applying the data augmentation, it was clear that the data results was better than the results during the data augmentation, also trying without dropout in the input layer has shown better accuracy and promissing results.
