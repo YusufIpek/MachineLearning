@@ -65,3 +65,31 @@ we add a flatten layer that takes the output of the CNN and flattens it and pass
 for optimization:
 
 using Adam or rmsprop, as they have a very good flixability, ..... ( describe them more ).
+
+
+
+very useful
+
+Input Layer : 
+
+All the input layer does is read the image. So, there are no parameters learn in here.
+
+Convolutional Layer : 
+
+Consider a convolutional layer which takes “l” feature maps as the input and has “k” feature maps as output. The filter size is “n*m”.
+Here the input has l=32 feature maps as inputs, k=64 feature maps as outputs and filter size is n=3 and m=3. It is important to understand, that we don’t simply have a 3*3 filter, but actually, we have 3*3*32 filter, as our input has 32 dimensions. And as an output from first conv layer, we learn 64 different 3*3*32 filters which total weights is “n*m*k*l”. Then there is a term called bias for each feature map. So, the total number of parameters are “(n*m*l+1)*k”.
+
+number of filters
+
+we have always a 3*3 kernel ,right ?
+that kernel is one of the weights that we try to learn the new information that we can say the first parameters is the number of the filters we have so we have around 28*28 hidden layer, so this hidden layer had 784(28*28) cell so we have already multiplied it with our filter 784 the point here is instead of using one filter we say we will have 32 filters or 64 or 128 according to our complixety of our problem and we want to learn the accurate weights of these filters
+
+so how to pick a good number of filters, it must be higher than the number of cells in our kernel 
+if we use 5*5*1 then it should be higher than 25 
+if we use 5*5*3 then it should be higher than 75 
+and so on and I am sure it should be a high number because we have many different features in the images ( such as the edges , the straight lines, the curves, corners, different colors and so on ) but why it should not be too much higher, because imagine we have 784 filter for each image it will not describe main features like lines and edges , but it will then describe wrongly the feature of the image itself and this is overfitting
+-- more illosturation:
+When you are using the network to make a prediction, these filters are applied at each layer of the network. That is, a discrete convolution is performed for each filter on each input image, and the results of these convolutions are fed to the next layer of convolutions (or fully connected layer, or whatever else you might have).
+
+During training, the values in the filters are optimised with backpropogation with respect to a loss function. For classification tasks such as recognising digits, usually the cross entropy loss is used. Here's a visualisation of some filters learned in the first layer (top) and the filters learned in the second layer (bottom) of a convolutional network:
+As you can see, the first layer filters basically all act as simple edge detectors, while the second layer filters are more complex. As you go deeper into a network, the filters are able to detect more complex shapes. It gets a little tricky to visualise though, as these filters act on images that have been convolved many times already, and probably don't look much like the original natural image.

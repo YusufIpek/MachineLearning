@@ -15,10 +15,12 @@ from keras.models import Sequential
 from keras.layers import Dense, Dropout, Activation, Flatten
 from keras.layers import Conv2D, MaxPooling2D
 from keras import regularizers
+
+initial_num_filters = 128
 batch_size = 64
 num_classes = 10
 epochs = 10
-data_augmentation = False
+data_augmentation = True
 num_predictions = 20
 
 
@@ -37,22 +39,23 @@ print(x_test.shape[0], 'test samples')
 y_train = keras.utils.to_categorical(y_train, num_classes)
 y_test = keras.utils.to_categorical(y_test, num_classes)
 
-initial_num_cell = 128
+
 model = Sequential()
-model.add(Conv2D(initial_num_cell, (3, 3), padding='same',
+model.add(Conv2D(initial_num_filters, (3, 3), padding='same',
                  kernel_regularizer=regularizers.l2(1e-4),input_shape=x_train.shape[1:]))
-#model.add(Dropout(0.15))
+model.add(Dropout(0.15))
+
 model.add(Activation('relu'))
-model.add(Conv2D(initial_num_cell, (3, 3),
+model.add(Conv2D(initial_num_filters, (3, 3),
                  kernel_regularizer=regularizers.l2(1e-4)))
 model.add(Activation('relu'))
 model.add(MaxPooling2D(pool_size=(2, 2)))
 model.add(Dropout(0.25))
 
-model.add(Conv2D(64, (3, 3), padding='same',
+model.add(Conv2D(initial_num_filters*2, (3, 3), padding='same',
                  kernel_regularizer=regularizers.l2(1e-4)))
 model.add(Activation('relu'))
-model.add(Conv2D(64, (3, 3),kernel_regularizer=regularizers.l2(1e-4)))
+model.add(Conv2D(initial_num_filters*2, (3, 3),kernel_regularizer=regularizers.l2(1e-4)))
 model.add(Activation('relu'))
 model.add(MaxPooling2D(pool_size=(2, 2)))
 model.add(Dropout(0.35))
@@ -65,7 +68,7 @@ model.add(Dense(num_classes))
 model.add(Activation('softmax'))
 
 # initiate RMSprop optimizer
-opt = keras.optimizers.adam(lr=0.0001, decay=1e-6)
+opt = keras.optimizers.rmsprop(lr=0.0001, decay=1e-6)
 
 # Let's train the model using RMSprop
 model.compile(loss='categorical_crossentropy',
@@ -132,7 +135,7 @@ else:
 if not os.path.isdir(save_dir):
     os.makedirs(save_dir)
 model_path = os.path.join(save_dir, model_name)
-model.save(model_path)
+#model.save(model_path)
 print('Saved trained model at %s ' % model_path)
 
 # Score trained model.
