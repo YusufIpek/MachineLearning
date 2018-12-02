@@ -29,3 +29,9 @@ It has showed a small progress when applying a small dropout, it has reduce the 
 14,15,16,17 ) doing a regularization using L2 regulaizer with dropout of 0.15, has not achieve higher progress, the dropout regularization term looks more than enough to panalize the model, so we have neglect using the regularization term.
 
 18,19 ) it is always known that data augmentation is a powerful trick that help in ..., however, during applying the data augmentation, it was clear that the data results was better than the results during the data augmentation, also trying without dropout in the input layer has shown better accuracy and promissing results.
+
+20,21 ) no data augmentation without regularization
+
+22, 23 ) checking the number of filters and enhance the code, introducing the number of filters was a tricky part, in the beginning we has not worked smoothly with the number of filters, we were using a high number of filters in the first layer then reduce them in the following layers, but this has limmited our progress, but it is clear that the more layer you got the more complex feature you get then higher number of filters should be good point to consider
+
+24,25,26,27 ) suffering from overfitting

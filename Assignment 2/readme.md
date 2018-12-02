@@ -38,3 +38,8 @@ respective contributions.
 • Give illustrations, numbers and results as described above.
 
 • Discuss your results and any interesting insights and observations.
+
+Tasks:
+- check the data augmentation
+- write down the expermints and the notes, and the reasons.
+- figures and archticture plots

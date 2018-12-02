@@ -33,10 +33,10 @@ our trials:
 
 			* done *
 	2		1			10 				batch_size			32					64 				0.57726			 0.575 				1.2242891 		1.2297011 		neglect
-	2		2			10 		 num_cells_initial_cnn		32 					128 			0.7216 			 0.7158 			0.79991521 		0.82979323 		apply
+	2		2			10 		 num_initial_filters		32 					128 			0.7216 			 0.7158 			0.79991521 		0.82979323 		apply
 	2		3 			10 				batch_size 			32 					64 				0.69456 		 0.6881 			0.8667949 		0.88891986 		promissing to check
-	3		4 			30 	 	num_cells_initial_cnn		32 					128 			0.8011 			 0.7614 			0.591712 		0.704423		apply
-	3		5 			100 	 num_cells_initial_cnn		32 					128 			0.76056 		 0.741 				0.813926 		0.910277 		apply early stopping
+	3		4 			30 	 	 num_initial_filters		32 					128 			0.8011 			 0.7614 			0.591712 		0.704423		apply
+	3		5 			100 	 num_initial_filters		32 					128 			0.76056 		 0.741 				0.813926 		0.910277 		apply early stopping
 	4		6 			100 			batch_size 			32					64 				0.87464 		 0.8366 			0.37794 		0.50077 		apply
 	5		7			10 				optimizer 			rmsprop				adam			0.6884 			 0.6796 			0.90928 		0.9351026 		promissing to check
 	5		8 			100 			optimizer 			rmsprop 			adam 			0.92114 		 0.8506 			0.238647 		0.4417384 		apply
@@ -50,19 +50,29 @@ our trials:
 	6		16			100		dropout 0.15 reg_term		-- 					L2 		 		0.91084 		 0.8484 			0.31013 		0.47525568 		neglect
 	6		17			30		without dropout reg_term	-- 					L2 		 		0.79682 		 0.7736 			0.613128 		0.68806 		neglect
 
-	7		18			10 		data_augmentation with reg	True 				False 			0.73772			 0.7033 			0.80808064 		0.8855037 		promissing to apply
-			20			100		data_augmentation with reg	True 				False 
-	8		19			10		data_augmentation no reg	True 				False 			0.75288 		 0.7174 			0.75784913 		0.8365525 	best accuracy with 10 epochs
-			21			100		data_augmentation no reg	True 				False 			
+	7		18			10 		data_augmentation with drop	True 				False 			0.73772			 0.7033 			0.80808064 		0.8855037 		promissing to apply
+	8		19			10		data_augmentation no drop	True 				False 			0.75288 		 0.7174 			0.75784913 		0.8365525 	best accuracy with 10 epochs
 
+
+
+	8		20 			10 		no DA, no dropout doubled filters number with reg				0.86334 		 0.7847 			0.47977725 		0.6887 	trick in n_filters, will overfit
+	8		21 			10 		no DA, input dropout .15 doubled filters number with reg		0.83168			 0.761 				0.556263 		0.76045 		may overfit
+	8		22 			10		with DA, input dropout .15 doubled filters number with reg		0.77528			 0.7516 			0.70745424 		0.7716177 	DA term prevent overfitting
+	8		23 			10 		with DA, input dropout .15 doubled filters with reg	rmsprop 	0.7346			 0.74612 			0.78452533 		0.83092948		adam better than rmsprop		
+	8		30 			10		with DA, input dropout .25 doubled filters number with reg		0.76396 		 0.7409 			0.729281 		0.798403  reduce diff. but dec. accuracy
+
+	9 		28 			100 	with DA, input dropout .15 doubled filters with reg adam		 		
+	9 		29 			100 	with DA, input dropout .15 doubled filters with reg	rmsprop 	 			
+
+	8		24 			10 		no DA, input drop .15 doubled filters number with reg			0.85088			 0.7684 			0.5175825 		0.72770359 		neglect, will overfit
+	8		27 			10 		no DA, input drop .15 doubled filters , no reg 					0.8525 			 0.7664 			0.4637492 		0.6905263 		neglect, will overfit
+
+
+	8		25 			10 		no DA, no dropout doubled filters , no reg 						0.8674 			 0.7844 			0.41034758 		0.6296873 		may overfit
+	8		26 			50 		no DA, no dropout doubled filters , no reg 						0.99988 		 0.8289				0.00258 		0.7562815 	overfitted, early stop at 52
 			* not yet *
 
 
-						10 			arch_layer3
-						10 			activation_fun_layer1
-			 			10 			optimizer_rate
-			 			10 			batch_normalization 	--
-			 			10 			Limit weight sizes 		--
 
 
 
