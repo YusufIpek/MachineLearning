@@ -43,3 +43,5 @@ Tasks:
 - check the data augmentation
 - write down the expermints and the notes, and the reasons.
 - figures and archticture plots
+
+
