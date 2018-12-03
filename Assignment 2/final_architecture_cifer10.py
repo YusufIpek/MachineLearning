@@ -19,7 +19,7 @@ from keras import regularizers
 initial_num_filters = 128
 batch_size = 64
 num_classes = 10
-epochs = 100
+epochs = 75
 data_augmentation = True
 num_predictions = 20
 
@@ -41,16 +41,16 @@ y_test = keras.utils.to_categorical(y_test, num_classes)
 
 
 model = Sequential()
-model.add(Conv2D(initial_num_filters, (3, 3), padding='same',
+model.add(Conv2D(initial_num_filters, (5, 5), padding='same',
                  kernel_regularizer=regularizers.l2(1e-4),input_shape=x_train.shape[1:]))
-model.add(Dropout(0.15))
+model.add(Dropout(0.25))
 
 model.add(Activation('relu'))
-model.add(Conv2D(initial_num_filters, (3, 3),
+model.add(Conv2D(initial_num_filters, (5, 5),
                  kernel_regularizer=regularizers.l2(1e-4)))
 model.add(Activation('relu'))
 model.add(MaxPooling2D(pool_size=(2, 2)))
-model.add(Dropout(0.25))
+model.add(Dropout(0.35))
 
 model.add(Conv2D(initial_num_filters*2, (3, 3), padding='same',
                  kernel_regularizer=regularizers.l2(1e-4)))
@@ -58,7 +58,7 @@ model.add(Activation('relu'))
 model.add(Conv2D(initial_num_filters*2, (3, 3),kernel_regularizer=regularizers.l2(1e-4)))
 model.add(Activation('relu'))
 model.add(MaxPooling2D(pool_size=(2, 2)))
-model.add(Dropout(0.35))
+model.add(Dropout(0.5))
 
 model.add(Flatten())
 model.add(Dense(512))
@@ -148,13 +148,13 @@ scores = model.evaluate(x_test, y_test, verbose=1)
 print('Test loss:', scores[0])
 print('Test accuracy:', scores[1])
 
-import os
-os.environ["PATH"] += os.pathsep + 'C:/Program Files (x86)/Graphviz2.38/bin/'
-from keras.utils.vis_utils import plot_model
-plot_model(model,show_shapes=True, to_file='model.png')
+#import os
+#os.environ["PATH"] += os.pathsep + 'C:/Program Files (x86)/Graphviz2.38/bin/'
+#from keras.utils.vis_utils import plot_model
+#plot_model(model,show_shapes=True, to_file='model.png')
 
-from IPython.display import SVG
-from keras.utils.vis_utils import model_to_dot
+#from IPython.display import SVG
+#from keras.utils.vis_utils import model_to_dot
 
-SVG(model_to_dot(model).create(prog='dot', format='svg'))
+#SVG(model_to_dot(model).create(prog='dot', format='svg'))
 

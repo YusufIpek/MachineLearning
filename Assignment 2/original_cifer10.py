@@ -18,7 +18,7 @@ num_classes = 10
 epochs = 75
 data_augmentation = True
 num_predictions = 20
-save_dir = os.path.join(os.getcwd(), 'saved_models')
+#save_dir = os.path.join(os.getcwd(), 'saved_models')
 model_name = 'keras_cifar10_trained_model.h5'
 
 # The data, split between train and test sets:
