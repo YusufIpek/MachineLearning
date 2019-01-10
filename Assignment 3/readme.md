@@ -6,6 +6,8 @@
 
 'pip install gym'
 
+if you got error with running on windows, please check this link [https://github.com/openai/gym/issues/868]
+
 3- try to solve the mountain car task using linear value function (v fun)
 
 	- using TD & V(s,a)
