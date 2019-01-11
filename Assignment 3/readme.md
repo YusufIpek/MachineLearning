@@ -18,3 +18,19 @@ if you got error with running on windows, please check this link [https://github
 4- create reports and blot graphs for observations and results
 
 5- prepare report
+
+
+
+ [ some useful links ]
+
+this repo contains useful algo, and tutorials
+
+ https://github.com/vmayoral/basic_reinforcement_learning
+
+- it also has a tutorial about the openAI gym library we work with
+
+https://github.com/vmayoral/basic_reinforcement_learning/blob/master/tutorial3/README.md
+
+- another tutorial about using Q-learning to solve a problem in gym library 
+
+https://github.com/vmayoral/basic_reinforcement_learning/blob/master/tutorial4/README.md

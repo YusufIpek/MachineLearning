@@ -10,7 +10,7 @@ def run_RL_algorithm():
     TODO: make ( choose ) an action  * according to the algorithm 
     TODO: call env.step and give it that action
     TODO: update the policies and values tables, receive the rewards and returns
-    TODO: 
+    TODO: continue with other requirements in the assignment
     '''
     if i % 5 ==0:
         observation, reward, done, info = env.step(action1)
@@ -34,6 +34,8 @@ num_episodes = 10000
 # Uncomment following line to save video of our Agent interacting in this environment
 # This can be used for debugging and studying how our agent is performing
 # env = gym.wrappers.Monitor(env, './video/', force = True)
+#env.monitor.start('/tmp/video')
+# monitor.start(video_callable=lambda count: count % 100 == 0) to record every 100 episodes. (count is how many episodes have completed in code)
 
 # Number of times you want to train your agent to achieve the goal
 # Equivalent to number of epochs.
@@ -55,4 +57,4 @@ for i in range(0, num_episodes):
             print("Episode finished after {} timesteps".format(i+1))
             break
 #env.close()
-        
+#env.monitor.close()        
