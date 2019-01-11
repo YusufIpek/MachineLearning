@@ -2,18 +2,19 @@ import numpy as np
 import gym
 #from gym import wrappers
 
-n_states = 40 #TODO: check the best num of states to use ( tune )
-max_episodes = 20000
+n_states = 200 #TODO: check the best num of states to use ( tune )
+max_episodes = 30000
 initial_lr = 0.9 #Initial Learning rate
-min_lr = 0.01 # lowest learning rate
+min_lr = 0.001 # lowest learning rate
 discount_factor = 0.9
 max_iterations = 10000
-epsilon = 0.6  # act non-greedy or state-action have no value #TODO: tune to higher values
+epsilon = 0.2 # exploration constant  # act non-greedy or state-action have no value #TODO: tune to higher values
 env_name = 'MountainCar-v0'
 env = gym.make(env_name)
 env.seed(3333)
 np.random.seed(3333)
 q_table = np.zeros((n_states, n_states, env.action_space.n))
+successful_tries = 0
 
 def train(render=False):
     for ep in range(max_episodes):
@@ -34,6 +35,9 @@ def train(render=False):
                 probs = logits_exp / np.sum(logits_exp)
                 action = np.random.choice(env.action_space.n, p=probs)
             obs, reward, done, info = env.step(action)
+            if obs[0] >= 0.5:
+                global successful_tries
+                successful_tries +=1
             total_reward += reward
             # update q table
             new_state = obs_to_state(obs)
@@ -78,6 +82,7 @@ def obs_to_state(obs):
 
 if __name__ == '__main__':
     train(render=False)
+    print(" succeeded trials: ",successful_tries)
     solution_policy = np.argmax(q_table, axis=2)
     print("Solution policy")
     print(q_table)
