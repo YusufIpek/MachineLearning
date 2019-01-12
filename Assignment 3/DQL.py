@@ -88,6 +88,7 @@ def main_DQL(env):
     writer = SummaryWriter('~/tboardlogs/{}'.format(datetime.now().strftime('%b%d_%H-%M-%S')))
 
     # Parameters
+    successful = []
     steps = 2000
     state = env.reset()
     epsilon = 0.3
@@ -114,7 +115,7 @@ def main_DQL(env):
             # Uncomment to render environment
             if episode % 1000 == 0 and episode > 0:
                 if s == 0:
-                    print('successful episodes: {}'.format(np.count_nonzero(successful)))
+                    print('successful episodes: {}'.format(successes))
                 env.render()
                 
             
