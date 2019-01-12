@@ -21,6 +21,7 @@ we have tried first the normal q-learning but after many tries ( different learn
 and this raise the conflict between do more exploration to search about the goal or reduce the number of iterations to reduce the negative reward.
 
 after mthat, we dicided to check a better approach by using deep q-learning
+The portion inside the brackets becomes the loss function for our neural network where Q(st,at) is the output of our network and rt + γ max Q(st+1,at+1) is the target Q value as well as the label for our neural net turning the problem into a supervised learning problem solvable using gradient descent where α is our learning rate.
 
 5- prepare report
 
