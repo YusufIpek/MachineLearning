@@ -12,14 +12,19 @@ def set_environment():
 if __name__ == '__main__':
     # TODO: set environment 
     env = set_environment()
-
+    """
     # normal q-learning algorithm
     ''' will not be used as it does not achieve good results'''
-    # QL.main_QL(env)
-
+    print(" *** Trying normal Q-Learning agent:-- ")
+    episodes = 10000
+    print("Number of Episodes: ",episodes)
+    QL.main_QL(env,episodes = episodes)
+    """
 
     # Deep q-learning algorithm
     ''' will be used as our q-learning algorithm, managed to solve it after more than 2000 episode '''
+    print(" *** Now, Trying Deep Q-Learning agent:-- ")
+    print("Number of Episodes: ",3000)
     DQL.main_DQL(env)
 
     # TODO: some plots and visualization
