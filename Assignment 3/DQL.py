@@ -1,5 +1,5 @@
 # coding: utf-8
-# # Mountain Car v0 - Deep Q-Learning
+# Deep Q-Learning
 
 import ipympl
 import matplotlib.pyplot as plt
@@ -66,7 +66,7 @@ class Policy(nn.Module):
         super(Policy, self).__init__()
         self.state_space = env.observation_space.shape[0]
         self.action_space = env.action_space.n
-        self.hidden = 200
+        self.hidden = 300
         self.l1 = nn.Linear(self.state_space, self.hidden, bias=False)
         self.l2 = nn.Linear(self.hidden, self.action_space, bias=False)
     
@@ -106,6 +106,7 @@ def main_DQL(env):
     loss_fn = nn.MSELoss()
     optimizer = optim.SGD(policy.parameters(), lr=learning_rate)
     scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=1, gamma=0.9)
+    first_succeeded_episode = -1
 
     for episode in trange(episodes):
         episode_loss = 0
@@ -130,7 +131,7 @@ def main_DQL(env):
                 action = action.item()
             
             # Step forward and receive next state and reward
-            state_1, reward, done, _ = env.step(action)
+            state_1, reward, done, info = env.step(action)
             
             # Find max Q for t+1 state
             Q1 = policy(Variable(torch.from_numpy(state_1).type(torch.FloatTensor)))
@@ -169,6 +170,10 @@ def main_DQL(env):
                     scheduler.step()
                     writer.add_scalar('data/learning_rate', optimizer.param_groups[0]['lr'], episode)
 
+                    # Store episode number if it is the first
+                    if successes == 0:
+                        first_succeeded_episode = episode
+
                     # Record successful episode
                     successes += 1
                     writer.add_scalar('data/cumulative_success', successes, episode)
@@ -193,6 +198,7 @@ def main_DQL(env):
                 
     writer.close()
     print('successful episodes: {:d} - {:.4f}%'.format(successes, successes/episodes*100))
+    print(" The first episode that reached the solution is: ",first_succeeded_episode)
 
 
 '''
