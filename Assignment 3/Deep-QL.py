@@ -17,47 +17,6 @@ from datetime import datetime
 import glob, os
 
 
-'''
-# Running the environment with random actions produces no successful episodes in a run of 1000 episodes.  
-
-
-max_position = -.4
-positions = np.ndarray([0,2])
-rewards = []
-successful = []
-for episode in range(1000):
-    running_reward = 0
-    env.reset()
-    done = False
-    for i in range(200):
-        state, reward, done, _ = env.step(np.random.randint(0,3))
-        # Give a reward for reaching a new maximum position
-        if state[0] > max_position:
-            max_position = state[0]
-            positions = np.append(positions, [[episode, max_position]], axis=0)
-            running_reward += 10
-        else:
-            running_reward += reward
-        if done: 
-            if state[0] >= 0.5:
-                successful.append(episode)
-            rewards.append(running_reward)
-            break
-
-print('Furthest Position: {}'.format(max_position))
-plt.figure(1, figsize=[10,5])
-plt.subplot(211)
-plt.plot(positions[:,0], positions[:,1])
-plt.xlabel('Episode')
-plt.ylabel('Furthest Position')
-plt.subplot(212)
-plt.plot(rewards)
-plt.xlabel('Episode')
-plt.ylabel('Reward')
-plt.show()
-print('successful episodes: {}'.format(np.count_nonzero(successful)))
-'''
-
 # ## Policy
 # We use a shallow neural network with 200 hidden units to learn our policy.
 
@@ -77,13 +36,21 @@ class Policy(nn.Module):
         )
         return model(x)
     
-
-
-# We use the Q-Learning update equation to update our action value function based on the reward for the agent's action and the maximum future action value function one step in the future.  The portion inside the brackets becomes the loss function for our neural network where $Q(s_t,a_t)$ is the output of our network and $ r_t + \gamma \max\limits_{a} Q(s_{t+1},a_{t+1}) $ is the target Q value as well as the label for our neural net turning the problem into a supervised learning problem.
-# 
-# $$Q(s_t,a_t) \leftarrow Q(s_t,a_t) + \alpha \big[r_t + \gamma \max\limits_{a} Q(s_{t+1},a_{t+1}) - Q(s_t,a_t)\big]  \tag{Q-Learning}$$
-
 def main_DQL(env):
+    '''
+    D-QL algo:
+    - Initialize parameters
+    - Initialize Policy model and optimizers
+    - for each episode
+        - Initialize state S
+        - for each step in the episode
+            - choose action A using the policy
+            - take a step with action A & get the reward R and next state S'
+            - choose action A' for the next state S' using the policy
+            - update the policy 
+                update the weights with the Q_target 
+            - update the action A = A' & the state S = S'
+    '''
     env.seed(1); torch.manual_seed(1); np.random.seed(1)
     writer = SummaryWriter('~/tboardlogs/{}'.format(datetime.now().strftime('%b%d_%H-%M-%S')))
 
@@ -120,7 +87,7 @@ def main_DQL(env):
                 env.render()
                 
             
-            # Get first action value function
+            # choose action A using the policy
             Q = policy(Variable(torch.from_numpy(state).type(torch.FloatTensor)))
             
             # Choose epsilon-greedy action
@@ -130,7 +97,7 @@ def main_DQL(env):
                 _, action = torch.max(Q, -1)
                 action = action.item()
             
-            # Step forward and receive next state and reward
+            # take a step with action A & get the reward R and next state S'
             state_1, reward, done, info = env.step(action)
             
             # Find max Q for t+1 state
@@ -200,54 +167,8 @@ def main_DQL(env):
     print('successful episodes: {:d} - {:.4f}%'.format(successes, successes/episodes*100))
     print(" The first episode that reached the solution is: ",first_succeeded_episode)
 
-
-'''
-# ## Plot Results
-# Around episode 1000 the agent begins to successfully complete episodes.
-
-plt.figure(2, figsize=[10,5])
-p = pd.Series(position)
-ma = p.rolling(10).mean()
-plt.plot(p, alpha=0.8)
-plt.plot(ma)
-plt.xlabel('Episode')
-plt.ylabel('Position')
-plt.title('Car Final Position')
-plt.savefig('Final Position.png')
-plt.show()
-
-
-# <iframe width="900" position="800" frameborder="0" scrolling="no" src="//plot.ly/~ts1829/22.embed"></iframe>
-
-# ## Visualize Policy
-# We can see the policy by plotting the agent’s choice over a combination of positions and velocities. You can see that the agent learns to, *usually*, move left when the car’s velocity is negative and then switch directions when the car’s velocity becomes positive with a few position and velocity combinations on the left side of the environment where the agent will do nothing.
-
-X = np.random.uniform(-1.2, 0.6, 10000)
-Y = np.random.uniform(-0.07, 0.07, 10000)
-Z = []
-for i in range(len(X)):
-    _, temp = torch.max(policy(Variable(torch.from_numpy(np.array([X[i],Y[i]]))).type(torch.FloatTensor)), dim =-1)
-    z = temp.item()
-    Z.append(z)
-Z = pd.Series(Z)
-colors = {0:'blue',1:'lime',2:'red'}
-colors = Z.apply(lambda x:colors[x])
-labels = ['Left','Right','Nothing']
-
-import matplotlib.patches as mpatches
-from matplotlib.colors import ListedColormap
-fig = plt.figure(3, figsize=[7,7])
-ax = fig.gca()
-plt.set_cmap('brg')
-surf = ax.scatter(X,Y, c=Z)
-ax.set_xlabel('Position')
-ax.set_ylabel('Velocity')
-ax.set_title('Policy')
-recs = []
-for i in range(0,3):
-     recs.append(mpatches.Rectangle((0,0),1,1,fc=sorted(colors.unique())[i]))
-plt.legend(recs,labels,loc=4,ncol=3)
-fig.savefig('Policy.png')
-plt.show()
-
-'''
+if __name__ == '__main__':
+    env_name = 'MountainCar-v0'
+    env = gym.make(env_name)
+    env.seed(3333)
+    main_DQL(env)

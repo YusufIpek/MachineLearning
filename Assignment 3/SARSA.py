@@ -1,5 +1,5 @@
 # coding: utf-8
-# Deep Q-Learning
+# Deep SARSA
 
 import ipympl
 import matplotlib.pyplot as plt
@@ -47,9 +47,12 @@ def main_SARSA(env):
         - choose action A using the policy
         - for each step in the episode
             - take a step with action A & get the reward R and next state S'
+            - if next state S' is done and terminal
+                - update the weights without using the Q_target
+                - go to next episode
             - choose action A' for the next state S' using the policy
             - update the policy 
-                q[S,A] = q[S,A] + lr*(R + gamma*q[S',A'] - q[S,A] )
+                update the weights with the Q_target 
             - update the action A = A' & the state S = S'
     '''
     env.seed(3333); torch.manual_seed(3333); np.random.seed(3333)
@@ -85,7 +88,7 @@ def main_SARSA(env):
         S = env.reset()
 
         # choose action A using the policy
-        Q = policy(Variable(torch.from_numpy(S).type(torch.FloatTensor)))
+        Q = policy(Variable(torch.from_numpy(S).type(torch.FloatTensor))) # return a tensor of the three actions with the value of choosing each one of them
 
         # act non-greedy or state-action have no value # exploration constant 
         if np.random.rand(1) < epsilon:
@@ -132,7 +135,7 @@ def main_SARSA(env):
 
                     
                     # Update policy
-                    loss = loss_fn(Q, Q)
+                    loss = loss_fn(Q,R)
                     policy.zero_grad() # Zero the gradients before running the backward pass.
                     loss.backward()
                     optimizer.step()
