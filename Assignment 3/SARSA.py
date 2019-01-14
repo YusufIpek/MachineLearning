@@ -37,7 +37,7 @@ class Policy(nn.Module):
         return model(x)
 
 
-def main_DQL(env):
+def main_SARSA(env):
     '''
     SARSA algo:
     - Initialize parameters
@@ -61,7 +61,7 @@ def main_DQL(env):
     successful = []
     steps = 2000
     S = env.reset()
-    epsilon = 0.3
+    epsilon = 0.1
     gamma = 0.99
     loss_history = []
     reward_history = []
@@ -75,7 +75,7 @@ def main_DQL(env):
     policy = Policy(env)
     loss_fn = nn.MSELoss()  # the mean squared error
     optimizer = optim.SGD(policy.parameters(), lr=learning_rate) # to optimize the parameters using SGD
-    scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=1, gamma=0.9) # to adjust the learning rate
+    scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=1, gamma=0.99) # to adjust the learning rate
     first_succeeded_episode = -1
 
     for episode in trange(episodes): # trange is the range function but with ploting option
@@ -86,7 +86,7 @@ def main_DQL(env):
 
         # choose action A using the policy
         Q = policy(Variable(torch.from_numpy(S).type(torch.FloatTensor)))
-        
+
         # act non-greedy or state-action have no value # exploration constant 
         if np.random.rand(1) < epsilon:
            A = np.random.randint(0,3)
@@ -108,7 +108,58 @@ def main_DQL(env):
             # take a step with action A & get the reward R and next state S'  
             S_1, R, done, info = env.step(A)
 
-            
+            if done:
+                if S_1[0] >= 0.5:
+                    # On successful epsisodes, store the following parameters
+
+                    # Adjust epsilon
+                    epsilon *= .99
+                    writer.add_scalar('data/epsilon', epsilon, episode)
+
+                    # Adjust learning rate
+                    scheduler.step()
+                    writer.add_scalar('data/learning_rate', optimizer.param_groups[0]['lr'], episode)
+
+                    # Store episode number if it is the first
+                    if successes == 0:
+                        first_succeeded_episode = episode
+
+                    # Record successful episode
+                    successes += 1
+                    writer.add_scalar('data/cumulative_success', successes, episode)
+                    writer.add_scalar('data/success', 1, episode)
+                
+
+                    
+                    # Update policy
+                    loss = loss_fn(Q, Q)
+                    policy.zero_grad() # Zero the gradients before running the backward pass.
+                    loss.backward()
+                    optimizer.step()
+                    # Record history
+                    episode_loss += loss.item()
+                    episode_reward += R
+                    # Keep track of max position
+                    if S_1[0] > max_position:
+                        max_position = S_1[0]
+                        writer.add_scalar('data/max_position', max_position, episode)
+
+                elif S_1[0] < 0.5:
+                    writer.add_scalar('data/success', 0, episode)
+                
+                # Record history
+                loss_history.append(episode_loss)
+                reward_history.append(episode_reward)
+                writer.add_scalar('data/episode_loss', episode_loss, episode)
+                writer.add_scalar('data/episode_reward', episode_reward, episode)
+                weights = np.sum(np.abs(policy.l2.weight.data.numpy()))+np.sum(np.abs(policy.l1.weight.data.numpy()))
+                writer.add_scalar('data/weights', weights, episode)
+                writer.add_scalar('data/position', S_1[0], episode)
+                position.append(S_1[0])
+
+                break # to terminate the episode
+        
+
             # choose action A' for the next state S' using the policy
             Q_1 = policy(Variable(torch.from_numpy(S_1).type(torch.FloatTensor)))
             _,A_1 = torch.max(Q_1,-1)
@@ -134,46 +185,11 @@ def main_DQL(env):
                 max_position = S_1[0]
                 writer.add_scalar('data/max_position', max_position, episode)
             
-            if done:
-                if S_1[0] >= 0.5:
-                    # On successful epsisodes, store the following parameters
+            S = S_1
+            A_1 = A_1.item()
+            A = A_1
+            Q = Q_1            
 
-                    # Adjust epsilon
-                    epsilon *= .99
-                    writer.add_scalar('data/epsilon', epsilon, episode)
-
-                    # Adjust learning rate
-                    scheduler.step()
-                    writer.add_scalar('data/learning_rate', optimizer.param_groups[0]['lr'], episode)
-
-                    # Store episode number if it is the first
-                    if successes == 0:
-                        first_succeeded_episode = episode
-
-                    # Record successful episode
-                    successes += 1
-                    writer.add_scalar('data/cumulative_success', successes, episode)
-                    writer.add_scalar('data/success', 1, episode)
-                
-                elif S_1[0] < 0.5:
-                    writer.add_scalar('data/success', 0, episode)
-                
-                # Record history
-                loss_history.append(episode_loss)
-                reward_history.append(episode_reward)
-                writer.add_scalar('data/episode_loss', episode_loss, episode)
-                writer.add_scalar('data/episode_reward', episode_reward, episode)
-                weights = np.sum(np.abs(policy.l2.weight.data.numpy()))+np.sum(np.abs(policy.l1.weight.data.numpy()))
-                writer.add_scalar('data/weights', weights, episode)
-                writer.add_scalar('data/position', S_1[0], episode)
-                position.append(S_1[0])
-
-                break
-            else:
-                S = S_1
-                A_1 = A_1.item()
-                A = A_1
-                Q = Q_1
                 
 
 

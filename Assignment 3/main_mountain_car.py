@@ -1,6 +1,6 @@
 import gym
 import QL as QL
-import DQL as DQL
+import SARSA as SARSA
 #import nonlinearDQL as nonlinearDQL
 
 def set_environment():
@@ -28,7 +28,7 @@ if __name__ == '__main__':
     ''' will be used as our q-learning algorithm, managed to solve it after more than 2000 episode '''
     print(" *** Now, Trying a linear Deep Q-Learning agent:-- ")
     print("Number of Episodes: ",3000)
-    DQL.main_DQL(env)
+    SARSA.main_SARSA(env)
 
     # TODO: some plots and visualization
 
