@@ -5,7 +5,7 @@ import ipympl
 import matplotlib.pyplot as plt
 import gym
 import numpy as np
-from tqdm import tqdm, trange
+from tqdm import tqdm, trange # make your loops show a smart progress meter - just wrap any iterable loop
 import pandas as pd
 import torch
 import torch.nn as nn
@@ -16,50 +16,8 @@ from tensorboardX import SummaryWriter
 from datetime import datetime
 import glob, os
 
-
-'''
-# Running the environment with random actions produces no successful episodes in a run of 1000 episodes.  
-
-
-max_position = -.4
-positions = np.ndarray([0,2])
-rewards = []
-successful = []
-for episode in range(1000):
-    running_reward = 0
-    env.reset()
-    done = False
-    for i in range(200):
-        state, reward, done, _ = env.step(np.random.randint(0,3))
-        # Give a reward for reaching a new maximum position
-        if state[0] > max_position:
-            max_position = state[0]
-            positions = np.append(positions, [[episode, max_position]], axis=0)
-            running_reward += 10
-        else:
-            running_reward += reward
-        if done: 
-            if state[0] >= 0.5:
-                successful.append(episode)
-            rewards.append(running_reward)
-            break
-
-print('Furthest Position: {}'.format(max_position))
-plt.figure(1, figsize=[10,5])
-plt.subplot(211)
-plt.plot(positions[:,0], positions[:,1])
-plt.xlabel('Episode')
-plt.ylabel('Furthest Position')
-plt.subplot(212)
-plt.plot(rewards)
-plt.xlabel('Episode')
-plt.ylabel('Reward')
-plt.show()
-print('successful episodes: {}'.format(np.count_nonzero(successful)))
-'''
-
 # ## Policy
-# We use a shallow neural network with 200 hidden units to learn our policy.
+# We use a shallow neural network with 300 hidden units to learn our policy.
 
 class Policy(nn.Module):
     def __init__(self,env):
@@ -70,27 +28,39 @@ class Policy(nn.Module):
         self.l1 = nn.Linear(self.state_space, self.hidden, bias=False)
         self.l2 = nn.Linear(self.hidden, self.action_space, bias=False)
     
-    def forward(self, x):    
+    def forward(self, x): 
+        ''' a feed forward network with only one linear layer. '''   
         model = torch.nn.Sequential(
             self.l1,
             self.l2,
         )
         return model(x)
-    
 
-
-# We use the Q-Learning update equation to update our action value function based on the reward for the agent's action and the maximum future action value function one step in the future.  The portion inside the brackets becomes the loss function for our neural network where $Q(s_t,a_t)$ is the output of our network and $ r_t + \gamma \max\limits_{a} Q(s_{t+1},a_{t+1}) $ is the target Q value as well as the label for our neural net turning the problem into a supervised learning problem.
-# 
-# $$Q(s_t,a_t) \leftarrow Q(s_t,a_t) + \alpha \big[r_t + \gamma \max\limits_{a} Q(s_{t+1},a_{t+1}) - Q(s_t,a_t)\big]  \tag{Q-Learning}$$
 
 def main_DQL(env):
-    env.seed(1); torch.manual_seed(1); np.random.seed(1)
+    '''
+    SARSA algo:
+    - Initialize parameters
+    - Initialize Policy model and optimizers
+    - for each episode
+        - Initialize state S
+        - choose action A using the policy
+        - for each step in the episode
+            - take a step with action A & get the reward R and next state S'
+            - choose action A' for the next state S' using the policy
+            - update the policy 
+                q[S,A] = q[S,A] + lr*(R + gamma*q[S',A'] - q[S,A] )
+            - update the action A = A' & the state S = S'
+    '''
+    env.seed(3333); torch.manual_seed(3333); np.random.seed(3333)
+
+    # SummaryWriter is a high-level api to create an event file in a given directory and add summaries and events to it.
     writer = SummaryWriter('~/tboardlogs/{}'.format(datetime.now().strftime('%b%d_%H-%M-%S')))
 
-    # Parameters
+    # Initialize Parameters
     successful = []
     steps = 2000
-    state = env.reset()
+    S = env.reset()
     epsilon = 0.3
     gamma = 0.99
     loss_history = []
@@ -101,66 +71,72 @@ def main_DQL(env):
     successes = 0
     position = []
 
-    # Initialize Policy
+    # Initialize Policy model and optimizers
     policy = Policy(env)
-    loss_fn = nn.MSELoss()
-    optimizer = optim.SGD(policy.parameters(), lr=learning_rate)
-    scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=1, gamma=0.9)
+    loss_fn = nn.MSELoss()  # the mean squared error
+    optimizer = optim.SGD(policy.parameters(), lr=learning_rate) # to optimize the parameters using SGD
+    scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=1, gamma=0.9) # to adjust the learning rate
     first_succeeded_episode = -1
 
-    for episode in trange(episodes):
+    for episode in trange(episodes): # trange is the range function but with ploting option
+        # Initialize state S
         episode_loss = 0
         episode_reward = 0
-        state = env.reset()
+        S = env.reset()
+
+        # choose action A using the policy
+        Q = policy(Variable(torch.from_numpy(S).type(torch.FloatTensor)))
+        
+        # act non-greedy or state-action have no value # exploration constant 
+        if np.random.rand(1) < epsilon:
+           A = np.random.randint(0,3)
+        else:
+            _,A = torch.max(Q,-1)
+            A = A.item()
+
         for s in range(steps):
             # Uncomment to render environment
             if episode % 1000 == 0 and episode > 0:
                 if s == 0:
                     print('successful episodes: {}'.format(successes))
                 env.render()
-                
             
-            # Get first action value function
-            Q = policy(Variable(torch.from_numpy(state).type(torch.FloatTensor)))
-            
-            # Choose epsilon-greedy action
+            # act non-greedy or state-action have no value # exploration constant 
             if np.random.rand(1) < epsilon:
-                action = np.random.randint(0,3)
-            else:
-                _, action = torch.max(Q, -1)
-                action = action.item()
+                A = np.random.randint(0,3)
+        
+            # take a step with action A & get the reward R and next state S'  
+            S_1, R, done, info = env.step(A)
+
             
-            # Step forward and receive next state and reward
-            state_1, reward, done, info = env.step(action)
-            
-            # Find max Q for t+1 state
-            Q1 = policy(Variable(torch.from_numpy(state_1).type(torch.FloatTensor)))
-            maxQ1, _ = torch.max(Q1, -1)
+            # choose action A' for the next state S' using the policy
+            Q_1 = policy(Variable(torch.from_numpy(S_1).type(torch.FloatTensor)))
+            _,A_1 = torch.max(Q_1,-1)
             
             # Create target Q value for training the policy
             Q_target = Q.clone()
             Q_target = Variable(Q_target.data)
-            Q_target[action] = reward + torch.mul(maxQ1.detach(), gamma)
-            
+            Q_target[A] = R + torch.mul(A_1.detach(), gamma)
+
             # Calculate loss
             loss = loss_fn(Q, Q_target)
             
             # Update policy
-            policy.zero_grad()
+            policy.zero_grad() # Zero the gradients before running the backward pass.
             loss.backward()
             optimizer.step()
 
             # Record history
             episode_loss += loss.item()
-            episode_reward += reward
+            episode_reward += R
             # Keep track of max position
-            if state_1[0] > max_position:
-                max_position = state_1[0]
+            if S_1[0] > max_position:
+                max_position = S_1[0]
                 writer.add_scalar('data/max_position', max_position, episode)
             
             if done:
-                if state_1[0] >= 0.5:
-                    # On successful epsisodes, adjust the following parameters
+                if S_1[0] >= 0.5:
+                    # On successful epsisodes, store the following parameters
 
                     # Adjust epsilon
                     epsilon *= .99
@@ -179,7 +155,7 @@ def main_DQL(env):
                     writer.add_scalar('data/cumulative_success', successes, episode)
                     writer.add_scalar('data/success', 1, episode)
                 
-                elif state_1[0] < 0.5:
+                elif S_1[0] < 0.5:
                     writer.add_scalar('data/success', 0, episode)
                 
                 # Record history
@@ -189,13 +165,18 @@ def main_DQL(env):
                 writer.add_scalar('data/episode_reward', episode_reward, episode)
                 weights = np.sum(np.abs(policy.l2.weight.data.numpy()))+np.sum(np.abs(policy.l1.weight.data.numpy()))
                 writer.add_scalar('data/weights', weights, episode)
-                writer.add_scalar('data/position', state_1[0], episode)
-                position.append(state_1[0])
+                writer.add_scalar('data/position', S_1[0], episode)
+                position.append(S_1[0])
 
                 break
             else:
-                state = state_1
+                S = S_1
+                A_1 = A_1.item()
+                A = A_1
+                Q = Q_1
                 
+
+
     writer.close()
     print('successful episodes: {:d} - {:.4f}%'.format(successes, successes/episodes*100))
     print(" The first episode that reached the solution is: ",first_succeeded_episode)
