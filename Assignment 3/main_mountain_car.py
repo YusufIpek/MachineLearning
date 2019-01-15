@@ -28,8 +28,8 @@ if __name__ == '__main__':
     ''' will be used as our q-learning algorithm, managed to solve it after more than 2000 episode '''
     print("Number of Episodes: ",3000)
     # print(" *** Now, Trying a linear Deep Q-Learning agent:-- ")
-    # DQL.main_DQL(env)
-    
+    # DQL.policy = main_DQL(env)
+    # DQL.run_optimal_policy(env,policy)
 
     print(" *** Now, Trying a linear SARSA agent:-- ")
     policy = SARSA.main_SARSA(env)
@@ -41,5 +41,5 @@ if __name__ == '__main__':
 
     # Deep q-learning 
     print(" (Task ii): Non-linear value-action function approximator .... ")
-    #nonlinearDQL.main_fun(env)
+    # 
 

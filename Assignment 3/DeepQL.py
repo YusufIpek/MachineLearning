@@ -12,7 +12,6 @@ import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
 from torch.autograd import Variable
-from tensorboardX import SummaryWriter
 from datetime import datetime
 import glob, os
 
@@ -25,7 +24,7 @@ class Policy(nn.Module):
         super(Policy, self).__init__()
         self.state_space = env.observation_space.shape[0]
         self.action_space = env.action_space.n
-        self.hidden = 300
+        self.hidden = 500
         self.l1 = nn.Linear(self.state_space, self.hidden, bias=False)
         self.l2 = nn.Linear(self.hidden, self.action_space, bias=False)
     
@@ -51,8 +50,7 @@ def main_DQL(env):
                 update the weights with the Q_target 
             - update the action A = A' & the state S = S'
     '''
-    env.seed(1); torch.manual_seed(1); np.random.seed(1)
-    writer = SummaryWriter('~/DQLboardlogs/{}'.format(datetime.now().strftime('%b%d_%H-%M-%S')))
+    env.seed(3333); torch.manual_seed(3333); np.random.seed(3333)
 
     # Parameters
     successful = []
@@ -124,7 +122,6 @@ def main_DQL(env):
             # Keep track of max position
             if state_1[0] > max_position:
                 max_position = state_1[0]
-                writer.add_scalar('data/max_position', max_position, episode)
             
             if done:
                 if state_1[0] >= 0.5:
@@ -132,11 +129,9 @@ def main_DQL(env):
 
                     # Adjust epsilon
                     epsilon *= .99
-                    writer.add_scalar('data/epsilon', epsilon, episode)
 
                     # Adjust learning rate
                     scheduler.step()
-                    writer.add_scalar('data/learning_rate', optimizer.param_groups[0]['lr'], episode)
 
                     # Store episode number if it is the first
                     if successes == 0:
@@ -144,27 +139,16 @@ def main_DQL(env):
 
                     # Record successful episode
                     successes += 1
-                    writer.add_scalar('data/cumulative_success', successes, episode)
-                    writer.add_scalar('data/success', 1, episode)
-                
-                elif state_1[0] < 0.5:
-                    writer.add_scalar('data/success', 0, episode)
                 
                 # Record history
                 loss_history.append(episode_loss)
                 reward_history.append(episode_reward)
-                writer.add_scalar('data/episode_loss', episode_loss, episode)
-                writer.add_scalar('data/episode_reward', episode_reward, episode)
-                weights = np.sum(np.abs(policy.l2.weight.data.numpy()))+np.sum(np.abs(policy.l1.weight.data.numpy()))
-                writer.add_scalar('data/weights', weights, episode)
-                writer.add_scalar('data/position', state_1[0], episode)
                 position.append(state_1[0])
 
                 break
             else:
                 state = state_1
-                
-    writer.close()
+
     print('successful episodes: {:d} - {:.4f}%'.format(successes, successes/episodes*100))
     print(" The first episode that reached the solution is: ",first_succeeded_episode)
     return policy
@@ -191,6 +175,7 @@ def run_optimal_policy(env,policy,steps = 2000,episodes = 10):
                 break # to terminate the episode          
 
     print(" total succeeded {} out of {}".format(success_counter,episodes))
+
 if __name__ == '__main__':
     env_name = 'MountainCar-v0'
     env = gym.make(env_name)
