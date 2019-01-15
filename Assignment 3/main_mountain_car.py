@@ -1,7 +1,7 @@
 import gym
 import QL as QL
 import SARSA as SARSA
-#import nonlinearDQL as nonlinearDQL
+import DeepQL as DQL
 
 def set_environment():
     env_name = 'MountainCar-v0'
@@ -26,10 +26,14 @@ if __name__ == '__main__':
 
     # Deep q-learning algorithm
     ''' will be used as our q-learning algorithm, managed to solve it after more than 2000 episode '''
-    print(" *** Now, Trying a linear Deep Q-Learning agent:-- ")
     print("Number of Episodes: ",3000)
-    SARSA.main_SARSA(env)
+    # print(" *** Now, Trying a linear Deep Q-Learning agent:-- ")
+    # DQL.main_DQL(env)
+    
 
+    print(" *** Now, Trying a linear SARSA agent:-- ")
+    policy = SARSA.main_SARSA(env)
+    SARSA.run_optimal_policy(env,policy)
     # TODO: some plots and visualization
 
     print(" *** **** *** **** *** **** *** ")

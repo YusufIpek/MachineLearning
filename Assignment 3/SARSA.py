@@ -24,7 +24,7 @@ class Policy(nn.Module):
         super(Policy, self).__init__()
         self.state_space = env.observation_space.shape[0]
         self.action_space = env.action_space.n
-        self.hidden = 300
+        self.hidden = 500
         self.l1 = nn.Linear(self.state_space, self.hidden, bias=False)
         self.l2 = nn.Linear(self.hidden, self.action_space, bias=False)
     
@@ -58,13 +58,13 @@ def main_SARSA(env):
     env.seed(3333); torch.manual_seed(3333); np.random.seed(3333)
 
     # SummaryWriter is a high-level api to create an event file in a given directory and add summaries and events to it.
-    writer = SummaryWriter('~/tboardlogs/{}'.format(datetime.now().strftime('%b%d_%H-%M-%S')))
+    writer = SummaryWriter('~/SARSAboardlogs/{}'.format(datetime.now().strftime('%b%d_%H-%M-%S')))
 
     # Initialize Parameters
     successful = []
     steps = 2000
     S = env.reset()
-    epsilon = 0.1
+    epsilon = 0.2
     gamma = 0.99
     loss_history = []
     reward_history = []
@@ -78,7 +78,7 @@ def main_SARSA(env):
     policy = Policy(env)
     loss_fn = nn.MSELoss()  # the mean squared error
     optimizer = optim.SGD(policy.parameters(), lr=learning_rate) # to optimize the parameters using SGD
-    scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=1, gamma=0.99) # to adjust the learning rate
+    scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=1, gamma=0.9) # to adjust the learning rate
     first_succeeded_episode = -1
 
     for episode in trange(episodes): # trange is the range function but with ploting option
@@ -91,26 +91,34 @@ def main_SARSA(env):
         Q = policy(Variable(torch.from_numpy(S).type(torch.FloatTensor))) # return a tensor of the three actions with the value of choosing each one of them
 
         # act non-greedy or state-action have no value # exploration constant 
-        if np.random.rand(1) < epsilon:
-           A = np.random.randint(0,3)
+        rand_norm_uniform = np.random.uniform(0, 1)
+        if rand_norm_uniform < epsilon:
+           A = np.random.choice(env.action_space.n)
         else:
             _,A = torch.max(Q,-1)
             A = A.item()
 
         for s in range(steps):
-            # Uncomment to render environment
-            if episode % 1000 == 0 and episode > 0:
-                if s == 0:
+
+            if (episode % 1000 == 0 and episode > 0):
+                if s == 0 or s == 1999:
                     print('successful episodes: {}'.format(successes))
-                env.render()
+                #env.render()
             
             # act non-greedy or state-action have no value # exploration constant 
-            if np.random.rand(1) < epsilon:
-                A = np.random.randint(0,3)
+            rand_norm_uniform = np.random.uniform(0, 1)
+            if rand_norm_uniform < epsilon:
+                A = np.random.choice(env.action_space.n)
         
             # take a step with action A & get the reward R and next state S'  
             S_1, R, done, info = env.step(A)
-
+            '''
+            print(Q)
+            print(A)
+            print(rand_norm_uniform)
+            print(S_1)
+            input("#")
+            '''
             if done:
                 if S_1[0] >= 0.5:
                     # On successful epsisodes, store the following parameters
@@ -132,10 +140,13 @@ def main_SARSA(env):
                     writer.add_scalar('data/cumulative_success', successes, episode)
                     writer.add_scalar('data/success', 1, episode)
                 
+                    # Q_target = reward
+                    Q_target = Q.clone()
+                    Q_target = Variable(Q_target.data)
+                    Q_target[A] = R
 
-                    
                     # Update policy
-                    loss = loss_fn(Q,R)
+                    loss = loss_fn(Q,Q_target)
                     policy.zero_grad() # Zero the gradients before running the backward pass.
                     loss.backward()
                     optimizer.step()
@@ -165,12 +176,12 @@ def main_SARSA(env):
 
             # choose action A' for the next state S' using the policy
             Q_1 = policy(Variable(torch.from_numpy(S_1).type(torch.FloatTensor)))
-            _,A_1 = torch.max(Q_1,-1)
+            maxQ_1,A_1 = torch.max(Q_1,-1)
             
             # Create target Q value for training the policy
             Q_target = Q.clone()
             Q_target = Variable(Q_target.data)
-            Q_target[A] = R + torch.mul(A_1.detach(), gamma)
+            Q_target[A] = R + torch.mul(maxQ_1.detach(), gamma)
 
             # Calculate loss
             loss = loss_fn(Q, Q_target)
@@ -189,8 +200,7 @@ def main_SARSA(env):
                 writer.add_scalar('data/max_position', max_position, episode)
             
             S = S_1
-            A_1 = A_1.item()
-            A = A_1
+            A = A_1.item()
             Q = Q_1            
 
                 
@@ -199,55 +209,37 @@ def main_SARSA(env):
     writer.close()
     print('successful episodes: {:d} - {:.4f}%'.format(successes, successes/episodes*100))
     print(" The first episode that reached the solution is: ",first_succeeded_episode)
+    return policy
 
+def run_optimal_policy(env,policy,steps = 2000,episodes = 10):
+    # after finishing we want to test the policy
+    success_counter = 0
+    for iter_ in range(episodes):
+        S = env.reset()
+        # choose action A using the policy
+        Q = policy(Variable(torch.from_numpy(S).type(torch.FloatTensor))) # return a tensor of the three actions with the value of choosing each one of them
 
-'''
-# ## Plot Results
-# Around episode 1000 the agent begins to successfully complete episodes.
+        for s in range(steps):
+            env.render()
+            
+            # act greedy
+            _,A = torch.max(Q,-1)
+            A = A.item()
+            # take a step with action A & get the reward R and next state S'  
+            S_1, R, done, info = env.step(A)
+            if done:
+                if S_1[0] >= 0.5:
+                    success_counter += 1
+                    print(" **** successful try number {}  in testing phase, Car reached the goal. **** ".format(iter_))
+                break # to terminate the episode
 
-plt.figure(2, figsize=[10,5])
-p = pd.Series(position)
-ma = p.rolling(10).mean()
-plt.plot(p, alpha=0.8)
-plt.plot(ma)
-plt.xlabel('Episode')
-plt.ylabel('Position')
-plt.title('Car Final Position')
-plt.savefig('Final Position.png')
-plt.show()
+            # choose action A' for the next state S' using the policy
+            Q_1 = policy(Variable(torch.from_numpy(S_1).type(torch.FloatTensor)))
+            _,A_1 = torch.max(Q_1,-1)
 
+            S = S_1
+            A = A_1.item()
+            Q = Q_1   
+    print(" total succeeded {} out of {}".format(success_counter,episodes))         
 
-# <iframe width="900" position="800" frameborder="0" scrolling="no" src="//plot.ly/~ts1829/22.embed"></iframe>
-
-# ## Visualize Policy
-# We can see the policy by plotting the agent’s choice over a combination of positions and velocities. You can see that the agent learns to, *usually*, move left when the car’s velocity is negative and then switch directions when the car’s velocity becomes positive with a few position and velocity combinations on the left side of the environment where the agent will do nothing.
-
-X = np.random.uniform(-1.2, 0.6, 10000)
-Y = np.random.uniform(-0.07, 0.07, 10000)
-Z = []
-for i in range(len(X)):
-    _, temp = torch.max(policy(Variable(torch.from_numpy(np.array([X[i],Y[i]]))).type(torch.FloatTensor)), dim =-1)
-    z = temp.item()
-    Z.append(z)
-Z = pd.Series(Z)
-colors = {0:'blue',1:'lime',2:'red'}
-colors = Z.apply(lambda x:colors[x])
-labels = ['Left','Right','Nothing']
-
-import matplotlib.patches as mpatches
-from matplotlib.colors import ListedColormap
-fig = plt.figure(3, figsize=[7,7])
-ax = fig.gca()
-plt.set_cmap('brg')
-surf = ax.scatter(X,Y, c=Z)
-ax.set_xlabel('Position')
-ax.set_ylabel('Velocity')
-ax.set_title('Policy')
-recs = []
-for i in range(0,3):
-     recs.append(mpatches.Rectangle((0,0),1,1,fc=sorted(colors.unique())[i]))
-plt.legend(recs,labels,loc=4,ncol=3)
-fig.savefig('Policy.png')
-plt.show()
-
-'''
+                

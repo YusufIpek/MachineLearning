@@ -1,5 +1,5 @@
 
-*PN: best parameters ( epsilon with 0.3, hidden layers = 300 )
+*PN: best parameters ( epsilon with 0.2, hidden layers = 500 )
 
 Description:
 
@@ -41,6 +41,25 @@ Trying one hidden layer with 300 units has achieved better results:
 729/3000 successful episodes, first success at 846 ( epsilon  = 0.3 )
 
 
+-- SARSA
+
+226/3000 successful episodes, first success at 768 ( epsilon  = 0.1, hidden layer units = 300 )
+624/3000 successful episodes, first success at 794 ( epsilon  = 0.3, hidden layer units = 300 )
+
+923/3000 successful episodes, first success at 663 ( epsilon  = 0.2, hidden layer units = 500 )
+876/3000 successful episodes, first success at 621 ( epsilon  = 0.3, hidden layer units = 500 )
+
+
+it is important to notice that increasing the number of hidden layer units have made a better performance increasing the number of total successful episodes, the more units in the hidden layer the more successful episodes we got.
+
+on the testing phase
+QL did not succeeed
+DeepQL succeeded in 5 out 10
+SARSA succeeded in 4 out 10 in 300 hidden layers unit
+SARSA succeeded in 6 out 10 in 500 hidden layers unit
+
+
+
 [ Then for task ii ]
-wew are required to use a non-linear value-action function approximation using the continues value-action function approximator using the polynomial feature vector.
+wew are required to use a linear value-action function approximation using the continues value-action function approximator using the polynomial feature vector.
 

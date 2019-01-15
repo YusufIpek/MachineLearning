@@ -52,7 +52,7 @@ def main_DQL(env):
             - update the action A = A' & the state S = S'
     '''
     env.seed(1); torch.manual_seed(1); np.random.seed(1)
-    writer = SummaryWriter('~/tboardlogs/{}'.format(datetime.now().strftime('%b%d_%H-%M-%S')))
+    writer = SummaryWriter('~/DQLboardlogs/{}'.format(datetime.now().strftime('%b%d_%H-%M-%S')))
 
     # Parameters
     successful = []
@@ -80,26 +80,27 @@ def main_DQL(env):
         episode_reward = 0
         state = env.reset()
         for s in range(steps):
-            # Uncomment to render environment
+            
             if episode % 1000 == 0 and episode > 0:
-                if s == 0:
+                if s == 0 or s == 1999:
                     print('successful episodes: {}'.format(successes))
-                env.render()
+                #env.render()
                 
             
             # choose action A using the policy
             Q = policy(Variable(torch.from_numpy(state).type(torch.FloatTensor)))
             
             # Choose epsilon-greedy action
-            if np.random.rand(1) < epsilon:
-                action = np.random.randint(0,3)
+            rand_norm_uniform = np.random.uniform(0, 1)
+            if rand_norm_uniform < epsilon:
+                action = np.random.choice(env.action_space.n)
             else:
                 _, action = torch.max(Q, -1)
                 action = action.item()
             
             # take a step with action A & get the reward R and next state S'
             state_1, reward, done, info = env.step(action)
-            
+     
             # Find max Q for t+1 state
             Q1 = policy(Variable(torch.from_numpy(state_1).type(torch.FloatTensor)))
             maxQ1, _ = torch.max(Q1, -1)
@@ -166,9 +167,33 @@ def main_DQL(env):
     writer.close()
     print('successful episodes: {:d} - {:.4f}%'.format(successes, successes/episodes*100))
     print(" The first episode that reached the solution is: ",first_succeeded_episode)
+    return policy
 
+def run_optimal_policy(env,policy,steps = 2000,episodes = 10):
+    # after finishing we want to test the policy
+    success_counter = 0
+    for iter_ in range(episodes):
+        S = env.reset()
+        
+        for s in range(steps):
+            env.render()
+            # choose action A using the policy
+            Q = policy(Variable(torch.from_numpy(S).type(torch.FloatTensor))) # return a tensor of the three actions with the value of choosing each one of them
+    
+            # act greedy
+            _,A = torch.max(Q,-1)
+            # take a step with action A & get the reward R and next state S'  
+            S, R, done, info = env.step(A.item())
+            if done:
+                if S[0] >= 0.5:
+                    success_counter +=1
+                    print(" **** successful try number {}  in testing phase, Car reached the goal. **** ".format(iter_ +1))
+                break # to terminate the episode          
+
+    print(" total succeeded {} out of {}".format(success_counter,episodes))
 if __name__ == '__main__':
     env_name = 'MountainCar-v0'
     env = gym.make(env_name)
     env.seed(3333)
-    main_DQL(env)
+    policy = main_DQL(env)
+    run_optimal_policy(env,policy)
