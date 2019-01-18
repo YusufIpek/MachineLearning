@@ -2,6 +2,7 @@ import gym
 import QL as QL
 import SARSA as SARSA
 import DeepQL as DQL
+from tile_sarsa import Semi_Episodic_SARSA 
 
 def set_environment():
     env_name = 'MountainCar-v0'
@@ -31,11 +32,14 @@ if __name__ == '__main__':
     # DQL.policy = main_DQL(env)
     # DQL.run_optimal_policy(env,policy)
 
-    print(" *** Now, Trying a linear SARSA agent:-- ")
-    policy = SARSA.main_SARSA(env)
-    SARSA.run_optimal_policy(env,policy)
-    # TODO: some plots and visualization
+    #print(" *** Now, Trying a Deep NN-SARSA agent:-- ")
+    #policy = SARSA.main_SARSA(env)
+    #SARSA.run_optimal_policy(env,policy)
 
+    print(" *** Now, Trying a Semi-Episodic SARSA agent:-- ")
+    EpisodicSARSA = Semi_Episodic_SARSA(env)
+    EpisodicSARSA.Semi_Episodic_SARSA()
+    EpisodicSARSA.run_optimal_policy()
     print(" *** **** *** **** *** **** *** ")
     # Continues algorithms
 
@@ -43,3 +47,7 @@ if __name__ == '__main__':
     print(" (Task ii): Non-linear value-action function approximator .... ")
     # 
 
+
+    # TODO: some plots and visualization
+
+    env.close()
