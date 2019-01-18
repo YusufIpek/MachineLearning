@@ -79,6 +79,14 @@ SARSA succeeded in 8 out 10 in 500 hidden layers unit ( increasing epsilon 0.2 )
 we also tried to adjust the epsilon ( the greedy parameter ), by slightly reducing it after each successful episode ( to act less greedy ) and surprisingly this increased the number of successful episodes in the training phase but reduce slightly the number of successful episodes in the testing phase, on the other hand, increasing the epsilon after every successful episode made the agent more greedy and reduce the exploration, hence, the number of successful episodes in the training phase have decreased deramatically, but in the testing phase, it has increased much more.
 
                 ==========================================                      =========================================
-[ Then for task ii ]
-wew are required to use a linear value-action function approximation using the continues value-action function approximator using the polynomial feature vector.
 
+
+we then tried the semi-episodic algorithm to solve the problem without using any neural network archticture, and surprisingly, it has shown a very good progress, although it may take much time for training, but overall it does not need the same number of episodes to find the goal for the first time, and after few episodes it can convarge.
+
+
+[ Then for task ii ]
+we are required to use a linear value-action function approximation using the continues value-action function approximator using the polynomial feature vector.
+
+we have used a ready code doing tiling, the idea behind tiling is just dividing the space into number of partitions, we have chosen 16 partitions as recommended from the lectures, each partition is a tiling, and element in the tiling is a tile, we are creating the features of each partition by combining the position and the velocity of the object to have a feature represents these tiles in its tiling partition.
+
+after trying some iterations, we found that our space is small to do a tiling for 16 partition, so we have tried 8 partitions and it has shown better results in finding a feature vector to represent it.

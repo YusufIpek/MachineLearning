@@ -42,3 +42,6 @@ more references
 https://medium.com/@ts1829/solving-mountain-car-with-q-learning-b77bf71b1de2
 
 https://github.com/vmayoral/basic_reinforcement_learning/blob/master/BACKGROUND.md
+
+
+https://github.com/ShangtongZhang/reinforcement-learning-an-introduction/blob/master/chapter10/mountain_car.py
