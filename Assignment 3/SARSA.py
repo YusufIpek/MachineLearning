@@ -63,6 +63,7 @@ def main_SARSA(env,epsilon = 0.2,gamma = 0.99,steps = 2000,episodes = 3000,learn
     max_position = -0.4
     successes = 0
     position = []
+    env._max_episode_steps = steps
 
     # Initialize Policy model and optimizers
     policy = Policy(env)
@@ -131,16 +132,16 @@ def main_SARSA(env,epsilon = 0.2,gamma = 0.99,steps = 2000,episodes = 3000,learn
                     optimizer.step()
                     # Record history
                     episode_loss += loss.item()
-                    episode_reward += R
+                    
                     # Keep track of max position
                     if S_1[0] > max_position:
                         max_position = S_1[0]
-                
+
+                episode_reward += R
                 # Record history
                 loss_history.append(episode_loss)
                 reward_history.append(episode_reward)
                 position.append(S_1[0])
-
                 break # to terminate the episode
         
 
@@ -174,7 +175,7 @@ def main_SARSA(env,epsilon = 0.2,gamma = 0.99,steps = 2000,episodes = 3000,learn
 
     print('successful episodes: {:d} - {:.4f}%'.format(successes, successes/episodes*100))
     print(" The first episode that reached the solution is: ",first_succeeded_episode)
-    return policy
+    return policy, reward_history
 
 def run_optimal_policy(env,policy,steps = 2000,episodes = 10):
     # after finishing we want to test the policy
@@ -185,7 +186,7 @@ def run_optimal_policy(env,policy,steps = 2000,episodes = 10):
         Q = policy(Variable(torch.from_numpy(S).type(torch.FloatTensor))) # return a tensor of the three actions with the value of choosing each one of them
 
         for s in range(steps):
-            env.render()
+            # env.render()
             
             # act greedy
             _,A = torch.max(Q,-1)
@@ -207,9 +208,22 @@ def run_optimal_policy(env,policy,steps = 2000,episodes = 10):
             Q = Q_1   
     print(" total succeeded {} out of {}".format(success_counter,episodes))         
 
+def store_reward(df, reward_history, run, steps=500, episodes=500):
+        average_reward = ([str(x/steps).replace('.',',') for x in reward_history])  
+        df['avg reward run ' + str(run)] = average_reward    
+        df.to_csv('./benchmark_neuralnetwork_sarsa_steps' + str(steps) + "_episodes" + str(episodes) + ".csv", sep=' ', index=False)
+        
 if __name__ == '__main__':
     env_name = 'MountainCar-v0'
     env = gym.make(env_name)
     env.seed(3333)
-    policy = main_SARSA(env)
-    run_optimal_policy(env,policy)                
+
+    episodes = 500
+    steps = 1000
+    episode_attr = [x+1 for x in range(episodes)]
+    df = pd.DataFrame(data={'Episodes':episode_attr}) #create first column which represents the episodes
+    runs = 3
+    for run in range(runs):
+        policy, reward_history = main_SARSA(env, steps=steps, episodes=episodes)
+        store_reward(df, reward_history, run, steps=steps, episodes=episodes)
+        run_optimal_policy(env,policy)                
