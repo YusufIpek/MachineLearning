@@ -25,7 +25,7 @@ class Semi_Episodic_SARSA:
         #ploynomial features
 
 
-    def Semi_Episodic_SARSA(self,epsilon = 0.2,gamma = 0.99,steps = 2000,episodes = 500,learning_rate = 0.001):
+    def Semi_Episodic_SARSA(self,epsilon = 0.2,gamma = 0.99,steps = 2000,episodes = 100,learning_rate = 0.001):
         '''
         SARSA algo:
         - Initialize parameters
@@ -43,13 +43,13 @@ class Semi_Episodic_SARSA:
                 - update the action A = A' & the state S = S'
         '''   
         overall_reward_history = []
-        runs = 5
+        runs = 2
 
         for run in range(runs):
             self.env.seed(3333)
             np.random.seed(3333)
             # Initialize Parameters
-            self.env._max_episode_steps = 500
+            self.env._max_episode_steps = 1000
             successes = 0
             position = []
             first_succeeded_episode = -1
@@ -123,12 +123,12 @@ class Semi_Episodic_SARSA:
                     #TODO: calculate S & A 
                     S = S_1
                     A = A_1
-                overall_reward_history.append(reward_history)
+            overall_reward_history.append(reward_history)
         self.store_reward(overall_reward_history, runs, episodes=episodes)
         print('successful episodes: {:d} - {:.4f}%'.format(successes, successes/episodes*100))
         print(" The first episode that reached the solution is: ",first_succeeded_episode)
 
-    def store_reward(self, reward_history, runs, steps=500, episodes=500):
+    def store_reward(self, reward_history, runs, steps=1000, episodes=100):
         # print("Reward history:")
         # print(reward_history)
         # print("steps:")
