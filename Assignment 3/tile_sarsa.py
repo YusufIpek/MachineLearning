@@ -25,7 +25,7 @@ class Semi_Episodic_SARSA:
         #ploynomial features
 
 
-    def Semi_Episodic_SARSA(self,epsilon = 0.2,gamma = 0.99,steps = 2000,episodes = 100,learning_rate = 0.001):
+    def Semi_Episodic_SARSA(self,epsilon = 0.2,gamma = 0.99,steps = 2000,episodes = 500,learning_rate = 0.001):
         '''
         SARSA algo:
         - Initialize parameters
@@ -42,112 +42,93 @@ class Semi_Episodic_SARSA:
                     update the weights with the Q_target 
                 - update the action A = A' & the state S = S'
         '''   
-        overall_reward_history = []
-        runs = 2
+        self.env.seed(3333)
+        np.random.seed(3333)
+        # Initialize Parameters
+        self.env._max_episode_steps = steps
+        successes = 0
+        position = []
+        first_succeeded_episode = -1
+        reward_history = []
+        for episode in trange(episodes): # trange is the range function but with ploting option
+            # Initialize state S
+            episode_reward = 0
+            S = self.env.reset()
+            # act non-greedy or state-action have no value # exploration constant 
+            if np.random.uniform(0, 1) < epsilon:
+                A = np.random.choice(self.env.action_space.n)
+            else:
+                # TODO: take action from the policy
+                A = self.take_action(S)     
 
-        for run in range(runs):
-            self.env.seed(3333)
-            np.random.seed(3333)
-            # Initialize Parameters
-            self.env._max_episode_steps = 1000
-            successes = 0
-            position = []
-            first_succeeded_episode = -1
-            reward_history = []
-            for episode in trange(episodes): # trange is the range function but with ploting option
-                # Initialize state S
-                episode_reward = 0
-                S = self.env.reset()
+            for s in range(steps):
+                if (episode % 100 == 0 and episode > 0):
+                    if s == 0 or s == 1999:
+                        print('successful episodes: {}'.format(successes))
+                    #env.render()
+                
                 # act non-greedy or state-action have no value # exploration constant 
                 if np.random.uniform(0, 1) < epsilon:
                     A = np.random.choice(self.env.action_space.n)
-                else:
-                    # TODO: take action from the policy
-                    A = self.take_action(S)     
-
-                for s in range(steps):
-                    if (episode % 100 == 0 and episode > 0):
-                        if s == 0 or s == 1999:
-                            print('successful episodes: {}'.format(successes))
-                        #env.render()
-                    
-                    # act non-greedy or state-action have no value # exploration constant 
-                    if np.random.uniform(0, 1) < epsilon:
-                        A = np.random.choice(self.env.action_space.n)
-                
-                    # take a step with action A & get the reward R and next state S'  
-                    S_1, R, done, info = self.env.step(A)
-                    if done:
-                        if S_1[0] >= 0.5:
-                            # On successful epsisodes, store the following parameters
-                            
-                            # Adjust epsilon
-                            epsilon *= 0.99
-
-                            # Store episode number if it is the first
-                            if successes == 0:
-                                first_succeeded_episode = episode
-
-                            # Record successful episode
-                            successes += 1
+            
+                # take a step with action A & get the reward R and next state S'  
+                S_1, R, done, info = self.env.step(A)
+                if done:
+                    if S_1[0] >= 0.5:
+                        # On successful epsisodes, store the following parameters
                         
-                            #TODO: update your weights
-                            change = learning_rate * (R - self.build_q_fun(S, A))
-                            self.weights += change * np.array(self.delta(S, A))
-                            weights = self.weights
+                        # Adjust epsilon
+                        epsilon *= 0.99
 
-                        episode_reward += R
-                        # Record history
-                        reward_history.append(episode_reward)
-                        position.append(S_1[0])
-                        break # to terminate the episode
-                
-                    # choose action A' for the next state S' using the policy
-                    #TODO: choose second action A'
-                    A_1 = self.take_action(S_1)
+                        # Store episode number if it is the first
+                        if successes == 0:
+                            first_succeeded_episode = episode
+
+                        # Record successful episode
+                        successes += 1
                     
-                    # Create target Q value for training the policy
-                    #TODO: create the q_target value
-                    qdash = self.build_q_fun(S_1, A_1)
-                    q = self.build_q_fun(S, A)
-                    # Update policy
-                    #TODO: update policy
-                    q_target = R + gamma * qdash
-                    change = learning_rate * (q_target - q)
-                    self.weights += change * np.array(self.delta(S, A))
-                    weights = self.weights
-                    
-                    # Record history
+                        #TODO: update your weights
+                        change = learning_rate * (R - self.build_q_fun(S, A))
+                        self.weights += change * np.array(self.delta(S, A))
+                        weights = self.weights
+
                     episode_reward += R
-                    
-                    #TODO: calculate S & A 
-                    S = S_1
-                    A = A_1
-            overall_reward_history.append(reward_history)
-        self.store_reward(overall_reward_history, runs, episodes=episodes)
+                    # Record history
+                    reward_history.append(episode_reward)
+                    position.append(S_1[0])
+                    break # to terminate the episode
+            
+                # choose action A' for the next state S' using the policy
+                #TODO: choose second action A'
+                A_1 = self.take_action(S_1)
+                
+                # Create target Q value for training the policy
+                #TODO: create the q_target value
+                qdash = self.build_q_fun(S_1, A_1)
+                q = self.build_q_fun(S, A)
+                # Update policy
+                #TODO: update policy
+                q_target = R + gamma * qdash
+                change = learning_rate * (q_target - q)
+                self.weights += change * np.array(self.delta(S, A))
+                weights = self.weights
+                
+                # Record history
+                episode_reward += R
+                
+                #TODO: calculate S & A 
+                S = S_1
+                A = A_1
+        # overall_reward_history.append(reward_history)
+        # self.store_reward(overall_reward_history, runs, episodes=episodes)
         print('successful episodes: {:d} - {:.4f}%'.format(successes, successes/episodes*100))
         print(" The first episode that reached the solution is: ",first_succeeded_episode)
+        return reward_history
 
-    def store_reward(self, reward_history, runs, steps=1000, episodes=100):
-        # print("Reward history:")
-        # print(reward_history)
-        # print("steps:")
-        # print(steps)
-        # print("episodes:")
-        # print(episode)
-        average_reward = []
-        reward_history_tmp = []
-
-        for reward_hist in reward_history:
-            average_reward.append([str(x/steps).replace('.',',') for x in reward_hist])
-        
-        episodes = range(1, episodes+1)
-        # df = pd.DataFrame(data={'Episodes':episodes, 'Reward':reward_history, 'Avg Reward':average_reward})
-        df = pd.DataFrame(data={'Episodes':episodes})
-        for i in range(runs):
-            df['avg reward run ' + str(i+1)] = average_reward[i]
-           
-        df.to_csv('./benchmark.csv', sep=' ', index=False)
+    def store_reward(self, df, reward_history, run, steps=500, episodes=500):
+        average_reward = ([str(x/steps).replace('.',',') for x in reward_history])  
+        df['avg reward run ' + str(run)] = average_reward    
+        df.to_csv('./benchmark_tile_sarsa_steps' + str(steps) + "_episodes" + str(episodes) + ".csv", sep=' ', index=False)
         
 
     # get indices of active tiles for given state and action
@@ -210,7 +191,15 @@ class Semi_Episodic_SARSA:
 if __name__ == '__main__':
     env_name = 'MountainCar-v0'
     env = gym.make(env_name)
-    env.seed(3333)    
-    EpisodicSARSA = Semi_Episodic_SARSA(env,features_type = True)
-    EpisodicSARSA.Semi_Episodic_SARSA()
-    EpisodicSARSA.run_optimal_policy() 
+    env.seed(3333)
+
+    episodes = 500
+    steps = 1000
+    episode_attr = [x+1 for x in range(episodes)]
+    df = pd.DataFrame(data={'Episodes':episode_attr}) #create first column which represents the episodes
+    runs = 3
+    for run in range(runs):
+        EpisodicSARSA = Semi_Episodic_SARSA(env,features_type = True)
+        reward_history = EpisodicSARSA.Semi_Episodic_SARSA(steps=steps, episodes=episodes)
+        EpisodicSARSA.store_reward(df, reward_history, run, steps=steps, episodes=episodes)
+        EpisodicSARSA.run_optimal_policy() 
