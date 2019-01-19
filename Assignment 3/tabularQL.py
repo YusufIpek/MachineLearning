@@ -20,6 +20,19 @@ def main_QL(env,episodes = 20000):
         run(env,render=True, policy=solution_policy,n_states = n_states)
 
 def train(env,q_table,n_states = 50,max_episodes = 20000,discount_factor = 0.99,initial_lr = 0.1,epsilon = 0.3 ,min_lr = 0.001,max_iterations = 10000 ,render=False):
+    '''
+    tabular-QL algo:
+    - Initialize parameters
+    - Initialize Policy model and optimizers
+    - for each episode
+        - Initialize state S
+        - for each step in the episode
+            - choose action A using the policy
+            - take a step with action A & get the reward R and next state S'
+            - choose action A' for the next state S' using the policy
+            - update the policy of the Q table 
+            - update the action A = A' & the state S = S'
+    '''
     first_succeeded_episode = -1
     successful_tries = 0
     for ep in range(max_episodes):

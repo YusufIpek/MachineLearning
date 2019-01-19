@@ -82,13 +82,16 @@ we also tried to adjust the epsilon ( the greedy parameter ), by slightly reduci
 
                 ==========================================                      =========================================
 
-
-we then tried the semi-episodic algorithm to solve the problem without using any neural network archticture, and surprisingly, it has shown a very good progress, although it may take much time for training, but overall it does not need the same number of episodes to find the goal for the first time, and after few episodes it can convarge.
-using semi-episodic algorithm has achieved a real convargance if we compared with earlier experiments. 
-
-
-[ Then for task ii ]
 we are required to use a linear value-action function approximation using the continues value-action function approximator using the polynomial feature vector.
+
+we then tried the semi-episodic algorithm to solve the problem without using any neural network archticture as a linear method.
+
+In the beginning we have tried many different methods to construct the feature vector, first we tried the logistic function to build 
+the features ( PHI(S) = S ^ j , when S is the state and j = 0, ...., n, and n is the number of components of the weight vector ), however this feature representation did not give us good results, so we have tried the fourier basis method which leads to an expansion in singusoidal functions.
+
+
+Then we have tried to use the tile coding method and surprisingly, it has shown a very good progress, although it may take much time for training, but overall it does not need the same number of episodes to find the goal for the first time, and after few episodes it can convarge.
+using semi-episodic algorithm has achieved a real convargance if we compared with earlier experiments. 
 
 we have used a ready code doing tiling by Richard S. Sutton, the idea behind tiling is just dividing the space into number of partitions, we have chosen 16 partitions as recommended from the lectures, each partition is a tiling, and element in the tiling is a tile, we are creating the features of each partition by combining the position and the velocity of the object to have a feature represents these tiles in its tiling partition.
 
