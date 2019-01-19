@@ -4,13 +4,15 @@
 Description:
 
 [ for task i ]
+At the beginning we started to try a tabular algorithms for this problem, we have tried tabular q-learning algorithm and tabular sarsa algorithm.
+
 it was about using an episodic algorithm which use tabular Q table, so we need a linear value-action function approximator.
 
 
--- Normal Q-learning
+-- tabular Q-learning
 
 
-So, we have tried first the normal linear q-learning algorithm but after many tries ( different learning rates, different exploration & gready threshold epsilon, different discount factors ) the agent could not learn the appropriate policy, and the main reason of this issue was the rewarding system, giving a -1 at each iteration was not a great indecation about the more you spend iterations the more punish you get, and theoritically this is a good point, however, because the agent never receive a positive reward till it reachs the goal, the agent was not able to figure out that it could be close to the goal but never explore it.
+So, we have tried first the tabular q-learning / sarsa algorithm but after many tries ( different learning rates, different exploration & gready threshold epsilon, different discount factors ) the agent could not learn the appropriate policy, and the main reason of this issue was the rewarding system, giving a -1 at each iteration was not a great indecation about the more you spend iterations the more punish you get, and theoritically this is a good point, however, because the agent never receive a positive reward till it reachs the goal, the agent was not able to figure out that it could be close to the goal but never explore it.
 and this raise the conflict between do more exploration to search about the goal or reduce the number of iterations to reduce the negative reward.
 
 0/3000 successful episodes ( epsilon  = 0.6 )
