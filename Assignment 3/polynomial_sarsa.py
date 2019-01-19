@@ -7,7 +7,7 @@ from tqdm import trange # make your loops show a smart progress meter - just wra
 import random
 
 class Semi_Episodic_SARSA:
-    def __init__(self,env,weights = None,max_tiles = 2048,num_tilings = 8,features_type = True):
+    def __init__(self,env,weights = None,max_tiles = 1801,num_tilings = 8,features_type = True):
         self.env = env
         self.maxtiles = max_tiles
         self.numtilings = num_tilings
@@ -25,11 +25,14 @@ class Semi_Episodic_SARSA:
         self.features_flag = features_type
         if self.features_flag == True:
             for i in range(0, self.maxtiles):
-                k = i if i <= 5 else 2
+                k = i if i <= 2 else 2
                 self.bases.append(lambda s, i=i: pow(s, k))
         else:
-            for i in range(0, self.numtilings):
+            for i in range(1, self.numtilings+1):
                 self.feat.append(lambda s, i=i: pow(s, i))
+        self.features = []
+        for i in range(-1200,601):
+            self.features.append([i/1000,0])
 
     def Semi_Episodic_SARSA(self,epsilon = 0.2,gamma = 0.99,steps = 2000,episodes = 500,learning_rate = 0.001):
         '''
@@ -51,6 +54,7 @@ class Semi_Episodic_SARSA:
         self.env.seed(3333)
         np.random.seed(3333)
         # Initialize Parameters
+        self.env._max_episode_steps = 1000
         reward_history = []
         successes = 0
         position = []
@@ -161,11 +165,16 @@ class Semi_Episodic_SARSA:
     def get_features(self,state):
         # get the feature vector 
         state_features = np.asarray([func(state) for func in self.feat])
-        feature = [0,0] * self.maxtiles 
+        feature = np.asarray(self.features)
+        
         for a_feature in state_features:
-            feature[a_feature] = 1
+            index = float(format(a_feature[0],'.2f'))
+            if index <= 0.6 and index >= -1.2:
+                for i in feature:
+                    if i[0] == index:
+                        i[1] = a_feature[1]
         return feature
-
+    
     def run_optimal_policy(self,steps = 2000,episodes = 10):
         # after finishing we want to test the policy
         success_counter = 0
