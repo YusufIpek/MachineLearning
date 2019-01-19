@@ -27,7 +27,6 @@ class Linear_Reg_SARSA:
                 for i in range(0, self.maxtiles):
                     #k = i if i <= 2 else 2
                     self.features.append(lambda s, i= i : pow(s, i)) # trying S power j  
-           
         else:
             for i in range(0, self.maxtiles):
                 self.features.append(lambda s, i=i: np.cos(i * np.pi * s)) # trying fourier basis 
@@ -149,14 +148,26 @@ class Linear_Reg_SARSA:
             if self.features_type == True:
                 a_feature = []
                 for i in range(0,self.maxtiles):
-                    a_feature.append(lambda s=state, i= random.choice([0,1,i]) : pow(s, i)) 
-                
-                return a_feature
+                    a_feature.append(pow(state, random.choice([0,1,i]) ) )
+                return np.asarray(a_feature)
             else:
                 return np.asarray([func(state) for func in self.features])
         else:   
             return np.asarray([func(state) for func in self.features])
     
+
+    def get_special_activities(self,state,n=2,k = 2):
+        length = (n+1)**k
+        features_universal = []
+        current_S_universal = []
+        next_S_universal = []
+        for iter_ in range(length):
+            current_S_universal.append( (pos0**iter_)*(vel0**iter_) )
+            next_S_universal.append( (pos1**iter_)*(vel1**iter_) )
+        for i in range(length):
+            features_universal.append(int(random.choice(current_S_universal)*random.choice(next_S_universal)) )
+        return features_universal
+
     def run_optimal_policy(self,steps = 2000,episodes = 10):
         # after finishing we want to test the policy
         success_counter = 0
@@ -186,6 +197,6 @@ if __name__ == '__main__':
     env_name = 'MountainCar-v0'
     env = gym.make(env_name)
     env.seed(3333)    
-    EpisodicSARSA = Linear_Reg_SARSA(env,features_type = True,basis_type = True) # for fourier basis_type = False, if feature_type is true choose small features randomly, else normal features 
+    EpisodicSARSA = Linear_Reg_SARSA(env,features_type = True,basis_type = False) # for fourier basis_type = False, if feature_type is true choose small features randomly, else normal features 
     EpisodicSARSA.Linear_Reg_SARSA()
     EpisodicSARSA.run_optimal_policy() 
