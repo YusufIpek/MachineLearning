@@ -45,3 +45,6 @@ https://github.com/vmayoral/basic_reinforcement_learning/blob/master/BACKGROUND.
 
 
 https://github.com/ShangtongZhang/reinforcement-learning-an-introduction/blob/master/chapter10/mountain_car.py
+
+
+https://tomaxent.com/2017/07/05/On-policy-Prediction-with-Approximation/

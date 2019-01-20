@@ -4,13 +4,10 @@
 import gym
 import numpy as np
 from tqdm import trange # make your loops show a smart progress meter - just wrap any iterable loop
-from TileCoding import *
-import csv
-import pandas as pd
-import matplotlib.pyplot as plt
+import random
 
-class Semi_Episodic_SARSA:
-    def __init__(self,env,weights = None,max_tiles = 2048,num_tilings = 8,features_type = True):
+class Linear_Reg_SARSA:
+    def __init__(self,env,weights = None,max_tiles = 2048,num_tilings = 8,features_type = True,basis_type = True):
         self.env = env
         self.maxtiles = max_tiles
         self.numtilings = num_tilings
@@ -21,12 +18,22 @@ class Semi_Episodic_SARSA:
         self.max_position, self.max_velocity = tuple(self.env.observation_space.high)
         self.min_position, self.min_velocity = tuple(self.env.observation_space.low)
         
-        self.hashTable = IHT(self.maxtiles)
-        #self.features_type = features_type #set True for tile features, set false for normal derivation
-        #ploynomial features
+        # set up features function
+        self.features = []
+        self.features_type = features_type
+        self.basis_type = basis_type
+        if self.basis_type == True:
+            if self.features_type == False:
+                for i in range(0, self.maxtiles):
+                    #k = i if i <= 2 else 2
+                    self.features.append(lambda s, i= i : pow(s, i)) # trying S power j  
+        else:
+            for i in range(0, self.maxtiles):
+                self.features.append(lambda s, i=i: np.cos(i * np.pi * s)) # trying fourier basis 
 
 
-    def Semi_Episodic_SARSA(self,epsilon = 0.2,gamma = 0.99,steps = 2000,episodes = 500,learning_rate = 0.001):
+
+    def Linear_Reg_SARSA(self,epsilon = 0.2,gamma = 0.99,steps = 2000,episodes = 500,learning_rate = 0.001):
         '''
         SARSA algo:
         - Initialize parameters
@@ -42,15 +49,16 @@ class Semi_Episodic_SARSA:
                 - update the policy 
                     update the weights with the Q_target 
                 - update the action A = A' & the state S = S'
-        '''   
+        '''
         self.env.seed(3333)
         np.random.seed(3333)
         # Initialize Parameters
-        self.env._max_episode_steps = steps
+        self.env._max_episode_steps = 1000
+        reward_history = []
         successes = 0
         position = []
         first_succeeded_episode = -1
-        reward_history = []
+
         for episode in trange(episodes): # trange is the range function but with ploting option
             # Initialize state S
             episode_reward = 0
@@ -60,10 +68,10 @@ class Semi_Episodic_SARSA:
                 A = np.random.choice(self.env.action_space.n)
             else:
                 # TODO: take action from the policy
-                A = self.take_action(S)     
+                A = self.take_action(S)   
 
             for s in range(steps):
-                if (episode % 100 == 0 and episode > 0):
+                if (episode % 50 == 0 and episode > 0):
                     if s == 0 or s == 1999:
                         print('successful episodes: {}'.format(successes))
                     #env.render()
@@ -90,13 +98,15 @@ class Semi_Episodic_SARSA:
                     
                         #TODO: update your weights
                         change = learning_rate * (R - self.build_q_fun(S, A))
-                        self.weights += change * np.array(self.delta(S, A))
-                        weights = self.weights
+                        delta = self.get_linear_features(S)
+                        self.weights += np.dot(delta,change)
 
-                    episode_reward += R
+                        episode_reward += R
+                    
                     # Record history
                     reward_history.append(episode_reward)
                     position.append(S_1[0])
+
                     break # to terminate the episode
             
                 # choose action A' for the next state S' using the policy
@@ -111,50 +121,52 @@ class Semi_Episodic_SARSA:
                 #TODO: update policy
                 q_target = R + gamma * qdash
                 change = learning_rate * (q_target - q)
-                self.weights += change * np.array(self.delta(S, A))
-                weights = self.weights
-                
+                delta = self.get_linear_features(S)
+                self.weights += np.dot(delta,change)
+
                 # Record history
                 episode_reward += R
                 
                 #TODO: calculate S & A 
                 S = S_1
-                A = A_1
-        # overall_reward_history.append(reward_history)
-        # self.store_reward(overall_reward_history, runs, episodes=episodes)
+                A = A_1          
+
         print('successful episodes: {:d} - {:.4f}%'.format(successes, successes/episodes*100))
         print(" The first episode that reached the solution is: ",first_succeeded_episode)
-        return reward_history
-
-    # get indices of active tiles for given state and action
-    def getActiveTiles(self,position, velocity, action):
-        activeTiles = tiles(self.hashTable, self.numtilings,
-                            [self.numtilings * position / (self.max_position - self.min_position), self.numtilings * velocity / (self.max_velocity - self.min_velocity)],
-                            [action])
-        return activeTiles
 
     def take_action(self,State):
         ''' take a state observation, returns the best chosen action.'''
         actions_list = [self.build_q_fun(State, action) for action in range(self.env.action_space.n)]
         return np.argmax(actions_list)
 
-    # q(S,A,weights) = x(S,A).T weights
+    # q(S,A,weights) = weights.T features(S,A)
     def build_q_fun(self,State, action):
-        q_temp = np.matmul(self.get_tile_features(State, action), self.weights)
-        return q_temp
-   
+        return np.dot(self.weights,self.get_linear_features(State) )
 
-    # delta_q(S,A,weights) = x(S,A)
-    def delta(self,State, action):
-        delta_val = self.get_tile_features(State, action)
-        return delta_val
+    def get_linear_features(self,state):
+        if self.basis_type == True:
+            if self.features_type == True:
+                a_feature = []
+                for i in range(0,self.maxtiles):
+                    a_feature.append(pow(state, random.choice([0,1,i]) ) )
+                return np.asarray(a_feature)
+            else:
+                return np.asarray([func(state) for func in self.features])
+        else:   
+            return np.asarray([func(state) for func in self.features])
+    
 
-    def get_tile_features(self,State, action):
-        tileIndices = self.getActiveTiles(State[0], State[1], action)
-        feature = [0] * self.maxtiles
-        for tile_index in tileIndices:
-            feature[tile_index] = 1
-        return feature
+    def get_special_activities(self,state,n=2,k = 2):
+        length = (n+1)**k
+        features_universal = []
+        current_S_universal = []
+        next_S_universal = []
+        for iter_ in range(length):
+            current_S_universal.append( (pos0**iter_)*(vel0**iter_) )
+            next_S_universal.append( (pos1**iter_)*(vel1**iter_) )
+        for i in range(length):
+            features_universal.append(int(random.choice(current_S_universal)*random.choice(next_S_universal)) )
+        return features_universal
 
     def run_optimal_policy(self,steps = 2000,episodes = 10):
         # after finishing we want to test the policy
@@ -181,54 +193,10 @@ class Semi_Episodic_SARSA:
 
         print(" total succeeded {} out of {}".format(success_counter,episodes))         
 
-
-def store_reward(df, reward_history, run, steps=500, episodes=500):
-    #average_reward = ([str(x/steps).replace('.',',') for x in reward_history])  
-    df['avg reward run ' + str(run)] = reward_history    
-    #df.to_csv('./benchmark_tile_sarsa_steps' + str(steps) + "_episodes" + str(episodes) + ".csv", sep=' ', index=False)
-
-
-def plot_average_reward(filename, df, average_reward_history):
-    # print(df)
-    pl = df.plot()
-    pl.set_xlabel('Episodes')
-    pl.set_ylabel('Avg Reward')
-    plt.savefig(filename + '.png')
-    plt.close() 
-
-def compute_average(total_reward_history, steps):
-    average_history = []
-    total_reward_history = np.asarray(total_reward_history)
-    total_reward_history = np.apply_along_axis(lambda x: x/steps, 1, total_reward_history)
-    for i in range(total_reward_history.shape[1]):
-        average_history.append(total_reward_history[:,i].mean())
-    return average_history
-    
-
-
-
 if __name__ == '__main__':
     env_name = 'MountainCar-v0'
     env = gym.make(env_name)
-    env.seed(3333)
-
-    episodes = 500
-    steps = 500
-    episode_attr = [x+1 for x in range(episodes)]
-    # df = pd.DataFrame(data={'Episodes':episode_attr}) #create first column which represents the episodes
-    runs = 2
-    total_reward_history = []
-    for run in range(runs):
-        EpisodicSARSA = Semi_Episodic_SARSA(env,features_type = True)
-        reward_history = (EpisodicSARSA.Semi_Episodic_SARSA(steps=steps, episodes=episodes))
-        # store_reward(df, reward_history, run, steps=steps, episodes=episodes)
-        total_reward_history.append(reward_history)
-        EpisodicSARSA.run_optimal_policy()
-
-    average_reward_history = compute_average(total_reward_history, steps)
-    df = pd.DataFrame(data={'avg reward':average_reward_history})    
-    plot_average_reward("tile_sarsa_" + "steps" + str(steps) + "_episodes" + str(episodes),df, average_reward_history)
-    
-    
-    
-
+    env.seed(3333)    
+    EpisodicSARSA = Linear_Reg_SARSA(env,features_type = True,basis_type = False) # for fourier basis_type = False, if feature_type is true choose small features randomly, else normal features 
+    EpisodicSARSA.Linear_Reg_SARSA()
+    EpisodicSARSA.run_optimal_policy() 
