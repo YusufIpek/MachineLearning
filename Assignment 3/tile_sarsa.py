@@ -120,8 +120,6 @@ class Semi_Episodic_SARSA:
                 #TODO: calculate S & A 
                 S = S_1
                 A = A_1
-        # overall_reward_history.append(reward_history)
-        # self.store_reward(overall_reward_history, runs, episodes=episodes)
         print('successful episodes: {:d} - {:.4f}%'.format(successes, successes/episodes*100))
         print(" The first episode that reached the solution is: ",first_succeeded_episode)
         return reward_history
@@ -182,12 +180,6 @@ class Semi_Episodic_SARSA:
         print(" total succeeded {} out of {}".format(success_counter,episodes))         
 
 
-def store_reward(df, reward_history, run, steps=500, episodes=500):
-    #average_reward = ([str(x/steps).replace('.',',') for x in reward_history])  
-    df['avg reward run ' + str(run)] = reward_history    
-    #df.to_csv('./benchmark_tile_sarsa_steps' + str(steps) + "_episodes" + str(episodes) + ".csv", sep=' ', index=False)
-
-
 def plot_average_reward(filename, df, average_reward_history):
     # print(df)
     pl = df.plot()
@@ -205,8 +197,6 @@ def compute_average(total_reward_history, steps):
     return average_history
     
 
-
-
 if __name__ == '__main__':
     env_name = 'MountainCar-v0'
     env = gym.make(env_name)
@@ -215,13 +205,11 @@ if __name__ == '__main__':
     episodes = 500
     steps = 500
     episode_attr = [x+1 for x in range(episodes)]
-    # df = pd.DataFrame(data={'Episodes':episode_attr}) #create first column which represents the episodes
     runs = 2
     total_reward_history = []
     for run in range(runs):
         EpisodicSARSA = Semi_Episodic_SARSA(env,features_type = True)
         reward_history = (EpisodicSARSA.Semi_Episodic_SARSA(steps=steps, episodes=episodes))
-        # store_reward(df, reward_history, run, steps=steps, episodes=episodes)
         total_reward_history.append(reward_history)
         EpisodicSARSA.run_optimal_policy()
 

@@ -208,11 +208,6 @@ def run_optimal_policy(env,policy,steps = 2000,episodes = 10):
             Q = Q_1   
     print(" total succeeded {} out of {}".format(success_counter,episodes))         
 
-def store_reward(df, reward_history, run, steps=500, episodes=500):
-    #average_reward = ([str(x/steps).replace('.',',') for x in reward_history])  
-    df['avg reward run ' + str(run)] = reward_history    
-    #df.to_csv('./benchmark_tile_sarsa_steps' + str(steps) + "_episodes" + str(episodes) + ".csv", sep=' ', index=False)
-
 
 def plot_average_reward(filename, df, average_reward_history):
     # print(df)
@@ -238,17 +233,15 @@ if __name__ == '__main__':
     episodes = 500
     steps = 500
     episode_attr = [x+1 for x in range(episodes)]
-    df = pd.DataFrame(data={'Episodes':episode_attr}) #create first column which represents the episodes
     runs = 2
     total_reward_history = []
 
     for run in range(runs):
         policy, reward_history = main_SARSA(env, steps=steps, episodes=episodes)
         total_reward_history.append(reward_history)
-        # store_reward(df, reward_history, run, steps=steps, episodes=episodes)
         run_optimal_policy(env,policy)
 
     average_reward_history = compute_average(total_reward_history, steps)
     df = pd.DataFrame(data={'avg reward':average_reward_history})    
-    plot_average_reward("nerual_network200_sarsa_" + "steps" + str(steps) + "_episodes" + str(episodes),df, average_reward_history)
+    plot_average_reward("neural_network_sarsa_" + "steps" + str(steps) + "_episodes" + str(episodes),df, average_reward_history)
                   
