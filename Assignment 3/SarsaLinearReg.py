@@ -7,31 +7,42 @@ from tqdm import trange # make your loops show a smart progress meter - just wra
 import random
 
 class Linear_Reg_SARSA:
-    def __init__(self,env,weights = None,max_tiles = 2048,num_tilings = 8,features_type = True,basis_type = True):
+    def __init__(self,env,weights = None,max_features = 2048,features_type = True,basis_type = True):
         self.env = env
-        self.maxtiles = max_tiles
-        self.numtilings = num_tilings
-        if weights == None:
-            self.weights = np.zeros(self.maxtiles)
-        else:
-            self.weights = weights
-        self.max_position, self.max_velocity = tuple(self.env.observation_space.high)
-        self.min_position, self.min_velocity = tuple(self.env.observation_space.low)
-        
         # set up features function
         self.features = []
         self.features_type = features_type
         self.basis_type = basis_type
+        self.max_features = max_features
+        self.set_features()
+        if weights == None:
+            self.weights = np.zeros(self.max_features)
+        else:
+            self.weights = weights
+        #self.max_position, self.max_velocity = tuple(self.env.observation_space.high)
+        #self.min_position, self.min_velocity = tuple(self.env.observation_space.low)
+
+    def set_features(self):
         if self.basis_type == True:
             if self.features_type == False:
-                for i in range(0, self.maxtiles):
+                self.max_features = 1801
+                for i in range(self.max_features):
+                    self.features.append([0,0])
+                self.mapper = {} # dict contain the mapped value
+                pos = 0
+                for i in range(-1200,601):
+                    #self.mapper.update({round( (i/100)*(j/200),6):pos})
+                    self.mapper.update({round( (i/1000),5):pos})
+                    pos+=1
+                print(pos)
+            else:
+                for i in range(0, self.max_features):
                     #k = i if i <= 2 else 2
-                    self.features.append(lambda s, i= i : pow(s, i)) # trying S power j  
+                    self.features.append(lambda s, i= i : pow(s, i)) # trying S power j 
+            
         else:
-            for i in range(0, self.maxtiles):
+            for i in range(0, self.max_features):
                 self.features.append(lambda s, i=i: np.cos(i * np.pi * s)) # trying fourier basis 
-
-
 
     def Linear_Reg_SARSA(self,epsilon = 0.2,gamma = 0.99,steps = 2000,episodes = 500,learning_rate = 0.001):
         '''
@@ -136,8 +147,11 @@ class Linear_Reg_SARSA:
 
     def take_action(self,State):
         ''' take a state observation, returns the best chosen action.'''
-        actions_list = [self.build_q_fun(State, action) for action in range(self.env.action_space.n)]
-        return np.argmax(actions_list)
+        temp = []
+        actions_list = [self.build_q_fun(State, action) for action in range(0,3)]
+        for a_list in actions_list:
+            temp.append(a_list[0])
+        return np.argmax(temp)
 
     # q(S,A,weights) = weights.T features(S,A)
     def build_q_fun(self,State, action):
@@ -147,26 +161,33 @@ class Linear_Reg_SARSA:
         if self.basis_type == True:
             if self.features_type == True:
                 a_feature = []
-                for i in range(0,self.maxtiles):
+                for i in range(0,self.max_features):
                     a_feature.append(pow(state, random.choice([0,1,i]) ) )
                 return np.asarray(a_feature)
             else:
-                return np.asarray([func(state) for func in self.features])
+                return self.get_special_activities(state)
         else:   
             return np.asarray([func(state) for func in self.features])
     
 
-    def get_special_activities(self,state,n=2,k = 2):
+    def get_special_activities(self,state,n=1,k = 2):
+        ''' mapping the states
+        TODO: create state features small list
+        TODO: create feature list of zeros 
+        TODO: map each state to specific four elements in the feature list
+        TODO: update the feature list with these elements
+        return the new feature list
+        '''
+        mappp = self.mapper
         length = (n+1)**k
-        features_universal = []
-        current_S_universal = []
-        next_S_universal = []
-        for iter_ in range(length):
-            current_S_universal.append( (pos0**iter_)*(vel0**iter_) )
-            next_S_universal.append( (pos1**iter_)*(vel1**iter_) )
-        for i in range(length):
-            features_universal.append(int(random.choice(current_S_universal)*random.choice(next_S_universal)) )
-        return features_universal
+        for i in range(1,length ):
+            if state[0] == 0:state[0]+=0.01 
+            if state[1] == 0:state[1]+=0.01 
+            s_feature = pow(state,i)
+            key = round( (s_feature[0]/1000),3 )
+            if key in self.mapper :
+                self.features[self.mapper[key]] = s_feature
+        return self.features
 
     def run_optimal_policy(self,steps = 2000,episodes = 10):
         # after finishing we want to test the policy
@@ -197,6 +218,6 @@ if __name__ == '__main__':
     env_name = 'MountainCar-v0'
     env = gym.make(env_name)
     env.seed(3333)    
-    EpisodicSARSA = Linear_Reg_SARSA(env,features_type = True,basis_type = False) # for fourier basis_type = False, if feature_type is true choose small features randomly, else normal features 
+    EpisodicSARSA = Linear_Reg_SARSA(env,features_type = False,basis_type = True) # for fourier basis_type = False, if feature_type is true choose small features randomly, else normal features 
     EpisodicSARSA.Linear_Reg_SARSA()
     EpisodicSARSA.run_optimal_policy() 
