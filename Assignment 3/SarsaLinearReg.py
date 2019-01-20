@@ -34,15 +34,16 @@ class Linear_Reg_SARSA:
                     #self.mapper.update({round( (i/100)*(j/200),6):pos})
                     self.mapper.update({round( (i/1000),5):pos})
                     pos+=1
-                print(pos)
-            else:
+                #print(pos)
+
+            else:# trying S power j 
                 for i in range(0, self.max_features):
                     #k = i if i <= 2 else 2
-                    self.features.append(lambda s, i= i : pow(s, i)) # trying S power j 
+                    self.features.append(lambda s, i= i : pow(s, i)) 
             
-        else:
+        else:# trying fourier basis 
             for i in range(0, self.max_features):
-                self.features.append(lambda s, i=i: np.cos(i * np.pi * s)) # trying fourier basis 
+                self.features.append(lambda s, i=i: np.cos(i * np.pi * s)) 
 
     def Linear_Reg_SARSA(self,epsilon = 0.2,gamma = 0.99,steps = 2000,episodes = 500,learning_rate = 0.001):
         '''

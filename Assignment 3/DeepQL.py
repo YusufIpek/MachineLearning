@@ -60,7 +60,7 @@ def main_DQL(env):
     gamma = 0.99
     loss_history = []
     reward_history = []
-    episodes = 3000
+    episodes = 6000
     max_position = -0.4
     learning_rate = 0.001
     successes = 0
@@ -153,14 +153,14 @@ def main_DQL(env):
     print(" The first episode that reached the solution is: ",first_succeeded_episode)
     return policy
 
-def run_optimal_policy(env,policy,steps = 2000,episodes = 10):
+def run_optimal_policy(env,policy,steps = 2000,episodes = 100):
     # after finishing we want to test the policy
     success_counter = 0
     for iter_ in range(episodes):
         S = env.reset()
         
         for s in range(steps):
-            env.render()
+            #env.render()
             # choose action A using the policy
             Q = policy(Variable(torch.from_numpy(S).type(torch.FloatTensor))) # return a tensor of the three actions with the value of choosing each one of them
     

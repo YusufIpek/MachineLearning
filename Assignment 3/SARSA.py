@@ -177,7 +177,7 @@ def main_SARSA(env,epsilon = 0.2,gamma = 0.99,steps = 2000,episodes = 3000,learn
     print(" The first episode that reached the solution is: ",first_succeeded_episode)
     return policy, reward_history
 
-def run_optimal_policy(env,policy,steps = 2000,episodes = 10):
+def run_optimal_policy(env,policy,steps = 2000,episodes = 100):
     # after finishing we want to test the policy
     success_counter = 0
     for iter_ in range(episodes):
@@ -230,8 +230,8 @@ if __name__ == '__main__':
     env = gym.make(env_name)
     env.seed(3333)
 
-    episodes = 500
-    steps = 500
+    episodes = 5000
+    steps = 2000
     episode_attr = [x+1 for x in range(episodes)]
     runs = 2
     total_reward_history = []
@@ -243,5 +243,5 @@ if __name__ == '__main__':
 
     average_reward_history = compute_average(total_reward_history, steps)
     df = pd.DataFrame(data={'avg reward':average_reward_history})    
-    plot_average_reward("neural_network_sarsa_" + "steps" + str(steps) + "_episodes" + str(episodes),df, average_reward_history)
+    #plot_average_reward("neural_network_sarsa_" + "steps" + str(steps) + "_episodes" + str(episodes),df, average_reward_history)
                   
