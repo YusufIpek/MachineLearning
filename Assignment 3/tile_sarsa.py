@@ -7,6 +7,7 @@ from tqdm import trange # make your loops show a smart progress meter - just wra
 from TileCoding import *
 import csv
 import pandas as pd
+import matplotlib.pyplot as plt
 
 class Semi_Episodic_SARSA:
     def __init__(self,env,weights = None,max_tiles = 2048,num_tilings = 8,features_type = True):
@@ -125,12 +126,6 @@ class Semi_Episodic_SARSA:
         print(" The first episode that reached the solution is: ",first_succeeded_episode)
         return reward_history
 
-    def store_reward(self, df, reward_history, run, steps=500, episodes=500):
-        average_reward = ([str(x/steps).replace('.',',') for x in reward_history])  
-        df['avg reward run ' + str(run)] = average_reward    
-        df.to_csv('./benchmark_tile_sarsa_steps' + str(steps) + "_episodes" + str(episodes) + ".csv", sep=' ', index=False)
-        
-
     # get indices of active tiles for given state and action
     def getActiveTiles(self,position, velocity, action):
         # I think positionScale * (position - position_min) would be a good normalization.
@@ -188,18 +183,54 @@ class Semi_Episodic_SARSA:
 
         print(" total succeeded {} out of {}".format(success_counter,episodes))         
 
+
+def store_reward(df, reward_history, run, steps=500, episodes=500):
+    #average_reward = ([str(x/steps).replace('.',',') for x in reward_history])  
+    df['avg reward run ' + str(run)] = reward_history    
+    #df.to_csv('./benchmark_tile_sarsa_steps' + str(steps) + "_episodes" + str(episodes) + ".csv", sep=' ', index=False)
+
+
+def plot_average_reward(filename, df, average_reward_history):
+    # print(df)
+    pl = df.plot()
+    pl.set_xlabel('Episodes')
+    pl.set_ylabel('Avg Reward')
+    plt.savefig(filename + '.png')
+    plt.close() 
+
+def compute_average(total_reward_history, steps):
+    average_history = []
+    total_reward_history = np.asarray(total_reward_history)
+    total_reward_history = np.apply_along_axis(lambda x: x/steps, 1, total_reward_history)
+    for i in range(total_reward_history.shape[1]):
+        average_history.append(total_reward_history[:,i].mean())
+    return average_history
+    
+
+
+
 if __name__ == '__main__':
     env_name = 'MountainCar-v0'
     env = gym.make(env_name)
     env.seed(3333)
 
     episodes = 500
-    steps = 1000
+    steps = 500
     episode_attr = [x+1 for x in range(episodes)]
-    df = pd.DataFrame(data={'Episodes':episode_attr}) #create first column which represents the episodes
-    runs = 3
+    # df = pd.DataFrame(data={'Episodes':episode_attr}) #create first column which represents the episodes
+    runs = 2
+    total_reward_history = []
     for run in range(runs):
         EpisodicSARSA = Semi_Episodic_SARSA(env,features_type = True)
-        reward_history = EpisodicSARSA.Semi_Episodic_SARSA(steps=steps, episodes=episodes)
-        EpisodicSARSA.store_reward(df, reward_history, run, steps=steps, episodes=episodes)
-        EpisodicSARSA.run_optimal_policy() 
+        reward_history = (EpisodicSARSA.Semi_Episodic_SARSA(steps=steps, episodes=episodes))
+        # store_reward(df, reward_history, run, steps=steps, episodes=episodes)
+        total_reward_history.append(reward_history)
+        EpisodicSARSA.run_optimal_policy()
+
+    average_reward_history = compute_average(total_reward_history, steps)
+    df = pd.DataFrame(data={'avg reward':average_reward_history})    
+    plot_average_reward("tile_sarsa_" + "steps" + str(steps) + "_episodes" + str(episodes),df, average_reward_history)
+    
+    
+    
+

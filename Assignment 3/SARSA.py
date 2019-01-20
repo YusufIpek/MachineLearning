@@ -209,21 +209,46 @@ def run_optimal_policy(env,policy,steps = 2000,episodes = 10):
     print(" total succeeded {} out of {}".format(success_counter,episodes))         
 
 def store_reward(df, reward_history, run, steps=500, episodes=500):
-        average_reward = ([str(x/steps).replace('.',',') for x in reward_history])  
-        df['avg reward run ' + str(run)] = average_reward    
-        df.to_csv('./benchmark_neuralnetwork_sarsa_steps' + str(steps) + "_episodes" + str(episodes) + ".csv", sep=' ', index=False)
-        
+    #average_reward = ([str(x/steps).replace('.',',') for x in reward_history])  
+    df['avg reward run ' + str(run)] = reward_history    
+    #df.to_csv('./benchmark_tile_sarsa_steps' + str(steps) + "_episodes" + str(episodes) + ".csv", sep=' ', index=False)
+
+
+def plot_average_reward(filename, df, average_reward_history):
+    # print(df)
+    pl = df.plot()
+    pl.set_xlabel('Episodes')
+    pl.set_ylabel('Avg Reward')
+    plt.savefig(filename + '.png')
+    plt.close() 
+
+def compute_average(total_reward_history, steps):
+    average_history = []
+    total_reward_history = np.asarray(total_reward_history)
+    total_reward_history = np.apply_along_axis(lambda x: x/steps, 1, total_reward_history)
+    for i in range(total_reward_history.shape[1]):
+        average_history.append(total_reward_history[:,i].mean())
+    return average_history
+
 if __name__ == '__main__':
     env_name = 'MountainCar-v0'
     env = gym.make(env_name)
     env.seed(3333)
 
     episodes = 500
-    steps = 1000
+    steps = 500
     episode_attr = [x+1 for x in range(episodes)]
     df = pd.DataFrame(data={'Episodes':episode_attr}) #create first column which represents the episodes
-    runs = 3
+    runs = 2
+    total_reward_history = []
+
     for run in range(runs):
         policy, reward_history = main_SARSA(env, steps=steps, episodes=episodes)
-        store_reward(df, reward_history, run, steps=steps, episodes=episodes)
-        run_optimal_policy(env,policy)                
+        total_reward_history.append(reward_history)
+        # store_reward(df, reward_history, run, steps=steps, episodes=episodes)
+        run_optimal_policy(env,policy)
+
+    average_reward_history = compute_average(total_reward_history, steps)
+    df = pd.DataFrame(data={'avg reward':average_reward_history})    
+    plot_average_reward("nerual_network200_sarsa_" + "steps" + str(steps) + "_episodes" + str(episodes),df, average_reward_history)
+                  
