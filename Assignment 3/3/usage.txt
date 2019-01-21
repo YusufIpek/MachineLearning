@@ -8,3 +8,17 @@ Usage:
 -To run Tile SARSA only:
 	Please run the script: "tile_sarsa.py"
 
+
+
+-other extra folders to try if needed:
+--- To run deep Q-network:
+	Please run the script: "DeepQL.py"
+
+--- To run tabular Q-learning:
+	Please run the script: "tabularQL.py"
+
+--- To run tabular SARSA:
+	Please run the script: "tabularSARSA.py"
+
+--- To run linear models ( normal polynomial model, fourier basis model ):
+	Please run the script: "SarsaLinearReg.py"
