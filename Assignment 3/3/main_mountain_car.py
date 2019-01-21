@@ -1,7 +1,7 @@
 import gym
 import tabularQL as tabularQL
 import tabularSARSA as tabularSARSA
-import SARSA as SARSA
+import DeepSARSA as SARSA
 import DeepQL as DQL
 from tile_sarsa import Semi_Episodic_SARSA 
 from SarsaLinearReg import Linear_Reg_SARSA
@@ -47,16 +47,16 @@ if __name__ == '__main__':
 
     # Deep learning algorithms
     ''' will be used as our q-learning algorithm, managed to solve it after more than 2000 episode '''
-    print("Number of Episodes: ",3000)
+    print("Number of Episodes: ",5000)
     print(" *** Now, Trying a linear Deep NN Q-Learning agent:-- ")
     policy = DQL.main_DQL(env)
     DQL.run_optimal_policy(env,policy)
     """
 
     print(" *** Now, Trying a Deep NN-SARSA agent:-- ")
-    policy = SARSA.main_SARSA(env)
+    policy,_ = SARSA.main_SARSA(env)
     SARSA.run_optimal_policy(env,policy)
-    # Continues algorithms
+    
     print(" (Task ii):  .... ")
 
     print(" *** Now, Trying a Semi-Episodic SARSA agent with tile coding:-- ")

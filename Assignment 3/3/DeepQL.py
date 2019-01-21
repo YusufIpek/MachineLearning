@@ -17,14 +17,14 @@ import glob, os
 
 
 # ## Policy
-# We use a shallow neural network with 200 hidden units to learn our policy.
+# We use a shallow neural network with 500 hidden units to learn our policy.
 
 class Policy(nn.Module):
-    def __init__(self,env):
+    def __init__(self,env,hidden_units = 500):
         super(Policy, self).__init__()
         self.state_space = env.observation_space.shape[0]
         self.action_space = env.action_space.n
-        self.hidden = 500
+        self.hidden = hidden_units
         self.l1 = nn.Linear(self.state_space, self.hidden, bias=False)
         self.l2 = nn.Linear(self.hidden, self.action_space, bias=False)
     
@@ -51,21 +51,21 @@ def main_DQL(env):
             - update the action A = A' & the state S = S'
     '''
     env.seed(3333); torch.manual_seed(3333); np.random.seed(3333)
-
     # Parameters
     successful = []
-    steps = 2000
+    steps = 200
     state = env.reset()
-    epsilon = 0.3
+    epsilon = 0.2
     gamma = 0.99
     loss_history = []
     reward_history = []
-    episodes = 6000
+    episodes = 5000
     max_position = -0.4
     learning_rate = 0.001
     successes = 0
     position = []
-
+    env._max_episode_steps = steps
+    
     # Initialize Policy
     policy = Policy(env)
     loss_fn = nn.MSELoss()
@@ -128,7 +128,7 @@ def main_DQL(env):
                     # On successful epsisodes, adjust the following parameters
 
                     # Adjust epsilon
-                    epsilon *= .99
+                    #epsilon *= .99
 
                     # Adjust learning rate
                     scheduler.step()
@@ -153,8 +153,9 @@ def main_DQL(env):
     print(" The first episode that reached the solution is: ",first_succeeded_episode)
     return policy
 
-def run_optimal_policy(env,policy,steps = 2000,episodes = 100):
+def run_optimal_policy(env,policy,steps = 1000,episodes = 100):
     # after finishing we want to test the policy
+    env._max_episode_steps = steps
     success_counter = 0
     for iter_ in range(episodes):
         S = env.reset()
@@ -174,7 +175,7 @@ def run_optimal_policy(env,policy,steps = 2000,episodes = 100):
                     print(" **** successful try number {}  in testing phase, Car reached the goal. **** ".format(iter_ +1))
                 break # to terminate the episode          
 
-    print(" total succeeded {} out of {}".format(success_counter,episodes))
+    print(" total succeeded {} out of {}, accuracy {}".format(success_counter,episodes,success_counter/episodes))     
 
 if __name__ == '__main__':
     env_name = 'MountainCar-v0'

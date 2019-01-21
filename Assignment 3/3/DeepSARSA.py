@@ -16,7 +16,7 @@ from datetime import datetime
 import glob, os
 
 # ## Policy
-# We use a shallow neural network with 300 hidden units to learn our policy.
+# We use a shallow neural network with 500 hidden units to learn our policy.
 
 class Policy(nn.Module):
     def __init__(self,env,hidden_units = 500):
@@ -36,7 +36,7 @@ class Policy(nn.Module):
         return model(x)
 
 
-def main_SARSA(env,epsilon = 0.2,gamma = 0.99,steps = 2000,episodes = 3000,learning_rate = 0.001):
+def main_SARSA(env,epsilon = 0.3,gamma = 0.99,steps = 200,episodes = 5000,learning_rate = 0.001):
     '''
     SARSA algo:
     - Initialize parameters
@@ -108,7 +108,7 @@ def main_SARSA(env,epsilon = 0.2,gamma = 0.99,steps = 2000,episodes = 3000,learn
                     # On successful epsisodes, store the following parameters
 
                     # Adjust epsilon
-                    epsilon *= 0.99
+                    #epsilon *= 0.99
 
                     # Adjust learning rate
                     scheduler.step()
@@ -177,7 +177,7 @@ def main_SARSA(env,epsilon = 0.2,gamma = 0.99,steps = 2000,episodes = 3000,learn
     print(" The first episode that reached the solution is: ",first_succeeded_episode)
     return policy, reward_history
 
-def run_optimal_policy(env,policy,steps = 2000,episodes = 100):
+def run_optimal_policy(env,policy,steps = 200,episodes = 100):
     # after finishing we want to test the policy
     success_counter = 0
     for iter_ in range(episodes):
@@ -206,7 +206,7 @@ def run_optimal_policy(env,policy,steps = 2000,episodes = 100):
             S = S_1
             A = A_1.item()
             Q = Q_1   
-    print(" total succeeded {} out of {}".format(success_counter,episodes))         
+    print(" total succeeded {} out of {}, accuracy {}".format(success_counter,episodes,success_counter/episodes))           
 
 
 def plot_average_reward(filename, df, average_reward_history):
@@ -230,8 +230,8 @@ if __name__ == '__main__':
     env = gym.make(env_name)
     env.seed(3333)
 
-    episodes = 5000
-    steps = 2000
+    episodes = 1000
+    steps = 1000
     episode_attr = [x+1 for x in range(episodes)]
     runs = 2
     total_reward_history = []
@@ -243,5 +243,5 @@ if __name__ == '__main__':
 
     average_reward_history = compute_average(total_reward_history, steps)
     df = pd.DataFrame(data={'avg reward':average_reward_history})    
-    #plot_average_reward("neural_network_sarsa_" + "steps" + str(steps) + "_episodes" + str(episodes),df, average_reward_history)
+    plot_average_reward("neural_network_sarsa_" + "steps" + str(steps) + "_episodes" + str(episodes),df, average_reward_history)
                   

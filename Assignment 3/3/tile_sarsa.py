@@ -26,7 +26,7 @@ class Semi_Episodic_SARSA:
         #ploynomial features
 
 
-    def Semi_Episodic_SARSA(self,epsilon = 0.2,gamma = 0.99,steps = 2000,episodes = 500,learning_rate = 0.001):
+    def Semi_Episodic_SARSA(self,epsilon = 0.3,gamma = 0.99,steps = 1000,episodes = 500,learning_rate = 0.001):
         '''
         SARSA algo:
         - Initialize parameters
@@ -79,7 +79,7 @@ class Semi_Episodic_SARSA:
                         # On successful epsisodes, store the following parameters
                         
                         # Adjust epsilon
-                        epsilon *= 0.99
+                        #epsilon *= 0.99
 
                         # Store episode number if it is the first
                         if successes == 0:
@@ -154,9 +154,10 @@ class Semi_Episodic_SARSA:
             feature[tile_index] = 1
         return feature
 
-    def run_optimal_policy(self,steps = 2000,episodes = 10):
+    def run_optimal_policy(self,steps = 1000,episodes = 100):
         # after finishing we want to test the policy
         success_counter = 0
+        self.env._max_episode_steps = steps
         for iter_ in range(episodes):
             S = self.env.reset()
             # choose action A using the policy
@@ -177,7 +178,7 @@ class Semi_Episodic_SARSA:
                 A = self.take_action(S_1)
                 S = S_1
 
-        print(" total succeeded {} out of {}".format(success_counter,episodes))         
+        print(" total succeeded {} out of {}, accuracy {}".format(success_counter,episodes,success_counter/episodes))         
 
 
 def plot_average_reward(filename, df, average_reward_history):
@@ -203,7 +204,7 @@ if __name__ == '__main__':
     env.seed(3333)
 
     episodes = 500
-    steps = 500
+    steps = 1000
     episode_attr = [x+1 for x in range(episodes)]
     runs = 2
     total_reward_history = []
