@@ -198,7 +198,7 @@ class Semi_Episodic_SARSA:
                 A = self.take_action(S_1)
                 S = S_1
 
-        print(" total succeeded {} out of {}".format(success_counter,episodes))         
+        print(" total succeeded {} out of {}, accuracy {}".format(success_counter,episodes,success_counter/episodes))            
 
 if __name__ == '__main__':
     env_name = 'MountainCar-v0'

@@ -4,9 +4,10 @@
 import gym
 import numpy as np
 from tqdm import trange # make your loops show a smart progress meter - just wrap any iterable loop
+from TileCoding import *
 
 class Semi_Episodic_SARSA:
-    def __init__(self,env,weights = None,max_tiles = 2048,num_tilings = 4,features_type = True):
+    def __init__(self,env,weights = None,max_tiles = 2048,num_tilings = 8,features_type = True):
         self.env = env
         self.maxtiles = max_tiles
         self.numtilings = num_tilings
@@ -17,7 +18,12 @@ class Semi_Episodic_SARSA:
         self.max_position, self.max_velocity = tuple(self.env.observation_space.high)
         self.min_position, self.min_velocity = tuple(self.env.observation_space.low)
         
-    def Semi_Episodic_SARSA(self,epsilon = 0.2,gamma = 0.99,steps = 2000,episodes = 500,learning_rate = 0.001):
+        self.hashTable = IHT(self.maxtiles)
+        #self.features_type = features_type #set True for tile features, set false for normal derivation
+        #ploynomial features
+
+
+    def Semi_Episodic_SARSA(self,epsilon = 0.3,gamma = 0.99,steps = 1000,episodes = 500,learning_rate = 0.001):
         '''
         SARSA algo:
         - Initialize parameters
@@ -37,7 +43,7 @@ class Semi_Episodic_SARSA:
         self.env.seed(3333)
         np.random.seed(3333)
         # Initialize Parameters
-        self.env._max_episode_steps = 1000
+        self.env._max_episode_steps = steps
         reward_history = []
         successes = 0
         position = []
@@ -66,13 +72,12 @@ class Semi_Episodic_SARSA:
             
                 # take a step with action A & get the reward R and next state S'  
                 S_1, R, done, info = self.env.step(A)
-
                 if done:
                     if S_1[0] >= 0.5:
                         # On successful epsisodes, store the following parameters
                         
                         # Adjust epsilon
-                        epsilon *= 0.99
+                        #epsilon *= 0.99
 
                         # Store episode number if it is the first
                         if successes == 0:
@@ -82,9 +87,8 @@ class Semi_Episodic_SARSA:
                         successes += 1
                     
                         #TODO: update your weights
-                        q = self.build_q_fun(S, A)
-                        change = learning_rate * (R - q)
-                        self.weights += change * np.array(self.delta(S, A)) 
+                        change = learning_rate * (R - self.build_q_fun(S, A))
+                        self.weights += change * np.array(self.delta(S, A))
                         weights = self.weights
 
                         episode_reward += R
@@ -94,11 +98,11 @@ class Semi_Episodic_SARSA:
                     position.append(S_1[0])
 
                     break # to terminate the episode
-                
+            
                 # choose action A' for the next state S' using the policy
                 #TODO: choose second action A'
                 A_1 = self.take_action(S_1)
-
+                
                 # Create target Q value for training the policy
                 #TODO: create the q_target value
                 qdash = self.build_q_fun(S_1, A_1)
@@ -107,8 +111,9 @@ class Semi_Episodic_SARSA:
                 #TODO: update policy
                 q_target = R + gamma * qdash
                 change = learning_rate * (q_target - q)
-                self.weights += change * np.array(self.delta(S, A)) 
-
+                self.weights += change * np.array(self.delta(S, A))
+                weights = self.weights
+                
                 # Record history
                 episode_reward += R
                 
@@ -119,6 +124,15 @@ class Semi_Episodic_SARSA:
         print('successful episodes: {:d} - {:.4f}%'.format(successes, successes/episodes*100))
         print(" The first episode that reached the solution is: ",first_succeeded_episode)
 
+    # get indices of active tiles for given state and action
+    def getActiveTiles(self,position, velocity, action):
+        # I think positionScale * (position - position_min) would be a good normalization.
+        # However positionScale * position_min is a constant, so it's ok to ignore it.
+        activeTiles = tiles(self.hashTable, self.numtilings,
+                            [self.numtilings * position / (self.max_position - self.min_position), self.numtilings * velocity / (self.max_velocity - self.min_velocity)],
+                            [action])
+        return activeTiles
+
     def take_action(self,State):
         ''' take a state observation, returns the best chosen action.'''
         actions_list = [self.build_q_fun(State, action) for action in range(self.env.action_space.n)]
@@ -126,28 +140,27 @@ class Semi_Episodic_SARSA:
 
     # q(S,A,weights) = x(S,A).T weights
     def build_q_fun(self,State, action):
-        pass
+        q_temp = np.matmul(self.get_tile_features(State, action), self.weights)
+        return q_temp
    
+
     # delta_q(S,A,weights) = x(S,A)
     def delta(self,State, action):
-        pass
+        delta_val = self.get_tile_features(State, action)
+        return delta_val
 
-    def get_gradients(self,q,q_next,qtarget,reward):
-        epsilon = 0.2
-        gamma = 0.99
-        test_target_1 = reward + gamma * q_next       
-        td_error_1 = qtarget - q
+    def get_tile_features(self,State, action):
+        tileIndices = self.getActiveTiles(State[0], State[1], action)
+        feature = [0] * self.maxtiles
+        for tile_index in tileIndices:
+            feature[tile_index] = 1
+        return feature
 
-        test_target_2 = reward + gamma * q_next      
-        td_error_2 = qtarget - q
-
-        grad = (td_error_1 - td_error_2) / (2 * epsilon)#0.2 is the epsilon
-        
-        return grad
-
-    def run_optimal_policy(self,steps = 2000,episodes = 10):
+    def run_optimal_policy(self,steps = 1000,episodes = 100):
         # after finishing we want to test the policy
         success_counter = 0
+
+        self.env._max_episode_steps = steps
         for iter_ in range(episodes):
             S = self.env.reset()
             # choose action A using the policy
@@ -168,7 +181,7 @@ class Semi_Episodic_SARSA:
                 A = self.take_action(S_1)
                 S = S_1
 
-        print(" total succeeded {} out of {}".format(success_counter,episodes))         
+        print(" total succeeded {} out of {}, accuracy {}".format(success_counter,episodes,success_counter/episodes))         
 
 if __name__ == '__main__':
     env_name = 'MountainCar-v0'
