@@ -1,0 +1,10 @@
+Usage:
+-To run both Neural Network SARSA and Tile SARSA:
+	Please run the script: "main_mountain_car.py"
+
+-To run Neural Network SARSA only:
+	Please run the script: "DeepSARSA.py" 
+
+-To run Tile SARSA only:
+	Please run the script: "tile_sarsa.py"
+
